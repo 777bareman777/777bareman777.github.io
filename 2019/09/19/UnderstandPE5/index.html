@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. 주요 섹션들과 정보들의 위치와 크기를 나타내는 IMAGE_DATA_DIRECTORAY에 대한 내용을 알아볼 거에요.   IMAGE_DATA_DIRECTORY의 시작이 구조체에는 주요 섹션들과 정보들의 위치와 크기를 나타내는 값들이 저장되어 있어요.구조체 배열의 크기에">
+<meta name="keywords" content="Windows">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조">
+<meta property="og:url" content="http://777bareman777.github.io/2019/09/19/UnderstandPE5/index.html">
+<meta property="og:site_name" content="777bareman777 Blog">
+<meta property="og:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. 주요 섹션들과 정보들의 위치와 크기를 나타내는 IMAGE_DATA_DIRECTORAY에 대한 내용을 알아볼 거에요.   IMAGE_DATA_DIRECTORY의 시작이 구조체에는 주요 섹션들과 정보들의 위치와 크기를 나타내는 값들이 저장되어 있어요.구조체 배열의 크기에">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-09-19T11:25:32.416Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조">
+<meta name="twitter:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. 주요 섹션들과 정보들의 위치와 크기를 나타내는 IMAGE_DATA_DIRECTORAY에 대한 내용을 알아볼 거에요.   IMAGE_DATA_DIRECTORY의 시작이 구조체에는 주요 섹션들과 정보들의 위치와 크기를 나타내는 값들이 저장되어 있어요.구조체 배열의 크기에">
+  <link rel="canonical" href="http://777bareman777.github.io/2019/09/19/UnderstandPE5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조 | 777bareman777 Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">777bareman777 Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">켄넬 교육받은 댕댕이</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/19/UnderstandPE5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-19 16:33:57 / Modified: 20:25:32" itemprop="dateCreated datePublished" datetime="2019-09-19T16:33:57+09:00">2019-09-19</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요.</p>
+<p>주요 섹션들과 정보들의 위치와 크기를 나타내는 <strong>IMAGE_DATA_DIRECTORAY</strong>에 대한 내용을 알아볼 거에요.</p>
+<br>
+
+<h2 id="IMAGE-DATA-DIRECTORY의-시작"><a href="#IMAGE-DATA-DIRECTORY의-시작" class="headerlink" title="IMAGE_DATA_DIRECTORY의 시작"></a>IMAGE_DATA_DIRECTORY의 시작</h2><p><strong>이 구조체에는 주요 섹션들과 정보들의 위치와 크기를 나타내는 값들이 저장되어 있어요.</strong><br>구조체 배열의 크기에 대한 값이 <strong>매크로 상수 값(IMAGE_UNMBEROF_DIRECTROY_ENTRIES)</strong>으로 지정이 되어 있지만, 공식 문서에서는 항상 16개로 고정되어 있지 않다고해요.<br>따라서 <strong>IMAGE_DATA_DIRECTORY 구조체의 배열의 개수를 알기 위해서는 IMAGE_OPTIONAL_HEADER 구조체의 NumberOfRvaAndSizes 멤버를 확인</strong>해야 되요.</p>
+<br>
+
+<p>지금은 16개로 고정되있다고 생각을 할게요!<br>16개가 있다면 이 구조체는 128바이트로 이루어진 구조체 배열이에요.<br>그리고 이 배열의 마지막 엔트리, 인덱스 15에 해당하는 엔트리는 언제나 0으로 세팅되야 한다고 해요.</p>
+<p>즉, <strong>배열의 인덱스 0부터 NumberOfRvaSizes-1까지의 인덱스가 지정하는 필드가 모두 사용되는 것이 아니라 마지막에 해당하는 인덱스를 제외하고 사용하는 거죠.</strong></p>
+<p>각 엔트리들은 나름대로의 의미를 가지고 있고요. 특히 <strong>병합된 섹션과 관련된 정보가 엔트리에 들어가기 때문이에요. 그래서 이 필드는 반드시 참조해야 하는 영역입니다.</strong></p>
+<p>각 배열의 엔트리의 의미는 이것 또한 “WinNT.h” 헤더 파일에 정의되어 있어요.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_UNMBEROF_DIRECTORAY_ENTRIES 16</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_DATA_DIRECTORY</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DWORD VirtualAddress;</span><br><span class="line">	DWORD Size;</span><br><span class="line">&#125; IMAGE_DATA_DIRECTROY, *PIMAGE_DATA_DIRECTROY:</span><br></pre></td></tr></table></figure>
+
+<p><strong>VirtualAddress 와 Size는 각각 해당 IMAGE_DATA_DIRECTORY_ENTRY의 인덱스에 해당하는 미리 지정된 섹션 또는 블록의 정보에 대한 시작 주소와 그 크기를 가리키는 RVA</strong> 이에요.</p>
+<p>예를 들면, 인덱스 0번은 Export Directory(내보내기 함수 테이블)에 대한 RVA와 크기이고, Import Directory(가져오기 함수 테이블)에 대한 RVA와 크기에요.</p>
+<br>
+
+<h2 id="IMAGE-DATA-DIRECTORY-ENTRY의-종류"><a href="#IMAGE-DATA-DIRECTORY-ENTRY의-종류" class="headerlink" title="IMAGE_DATA_DIRECTORY_ENTRY의 종류"></a>IMAGE_DATA_DIRECTORY_ENTRY의 종류</h2><p>이것 또한 각 인덱스의 의미는 “WinNT.h” 헤더 파일에 정의되어 있죠.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Directory Entries</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_EXPORT          0   <span class="comment">// Export Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_IMPORT          1   <span class="comment">// Import Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_RESOURCE        2   <span class="comment">// Resource Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_EXCEPTION       3   <span class="comment">// Exception Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_SECURITY        4   <span class="comment">// Security Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_BASERELOC       5   <span class="comment">// Base Relocation Table</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_DEBUG           6   <span class="comment">// Debug Directory</span></span></span><br><span class="line"><span class="comment">//      IMAGE_DIRECTORY_ENTRY_COPYRIGHT       7   // (X86 usage)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_ARCHITECTURE    7   <span class="comment">// Architecture Specific Data</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_GLOBALPTR       8   <span class="comment">// RVA of GP</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_TLS             9   <span class="comment">// TLS Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG    10   <span class="comment">// Load Configuration Directory</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT   11   <span class="comment">// Bound Import Directory in headers</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_IAT            12   <span class="comment">// Import Address Table</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT   13   <span class="comment">// Delay Load Import Descriptors</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR 14   <span class="comment">// COM Runtime descriptor</span></span></span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="0번-인덱스-IMAGE-DIRECTORY-ENTRY-EXPORT"><a href="#0번-인덱스-IMAGE-DIRECTORY-ENTRY-EXPORT" class="headerlink" title="0번 인덱스, IMAGE_DIRECTORY_ENTRY_EXPORT"></a>0번 인덱스, IMAGE_DIRECTORY_ENTRY_EXPORT</h3><p>익스포트 테이블(Export Directory Table), IMAGE_EXPORT_DIRECTORY 구조체의 시작 번지를 가리켜요. 이 시작 번지가 <strong>익스포트 섹션의 시작 주소</strong>에요.</p>
+<br>
+
+<h3 id="1번-인덱스-IMAGE-DIRECTORY-ENTRY-IMPORT"><a href="#1번-인덱스-IMAGE-DIRECTORY-ENTRY-IMPORT" class="headerlink" title="1번 인덱스, IMAGE_DIRECTORY_ENTRY_IMPORT"></a>1번 인덱스, IMAGE_DIRECTORY_ENTRY_IMPORT</h3><p>임포트 테이블(Import Directory Table), IMAGE_IMPORT_DESCRIPTOR 구조체 배열의 번지를 가리켜요. 이 시작 번지가 <strong>임포트 섹션의 시작 주소</strong>에요.</p>
+<br>
+
+<h3 id="2번-인덱스-IMAGE-DIRECTORY-ENTRY-RESOURCE"><a href="#2번-인덱스-IMAGE-DIRECTORY-ENTRY-RESOURCE" class="headerlink" title="2번 인덱스, IMAGE_DIRECTORY_ENTRY_RESOURCE"></a>2번 인덱스, IMAGE_DIRECTORY_ENTRY_RESOURCE</h3><p>리소스, IMAGE_RESOURCE_DIRECTORY 구조체의 시작 번지를 가리켜요. 이 시작 번지가 <strong>리소스 섹션의 시작 주소</strong>에요.</p>
+<br>
+
+<h3 id="3번-인덱스-IMAGE-DIRECTORY-ENTRY-EXCEPTION"><a href="#3번-인덱스-IMAGE-DIRECTORY-ENTRY-EXCEPTION" class="headerlink" title="3번 인덱스, IMAGE_DIRECTORY_ENTRY_EXCEPTION"></a>3번 인덱스, IMAGE_DIRECTORY_ENTRY_EXCEPTION</h3><p><strong>예외 핸들러 테이블(Exception Directory Table), IMAGE_RUNTIME_FUNCTION_ENTRY 구조체 배열의 시작 번지</strong>를 가리켜요. CPU에 의존적이고, 테이블 기반 예외 핸들링을 위한 것이죠. x86 계열을 제외한 모든 CPU상에서 사용되는데, X86 기반의 윈도우 PE 파일에서는 의미가 없는 영역이에요.</p>
+<p><strong>IA-64 CPU, 64비트 CPU에서는 사용</strong>하는 영역인거죠!!</p>
+<br>
+
+<h3 id="4번-인덱스-IMAGE-DIRECTORY-ENTRY-SECURITY"><a href="#4번-인덱스-IMAGE-DIRECTORY-ENTRY-SECURITY" class="headerlink" title="4번 인덱스, IMAGE_DIRECTORY_ENTRY_SECURITY"></a>4번 인덱스, IMAGE_DIRECTORY_ENTRY_SECURITY</h3><p><strong>“WinTrust.h” 헤더 파일에 정의되어 있는 WIN_CRETIFICATEW 구조체들의 리스트 시작 번지</strong>를 가리켜요.<br>이 리스트는 메모리 상에 매핑되지 않기 때문에 <strong>VirtualAddress 필드 값</strong>은 RVA가 아니라 <strong>파일 오프셋</strong>에 해당되요.</p>
+<br>
+
+<h3 id="5번-인덱스-IMAGE-DIRECTORY-ENTRY-BASERELOC"><a href="#5번-인덱스-IMAGE-DIRECTORY-ENTRY-BASERELOC" class="headerlink" title="5번 인덱스, IMAGE_DIRECTORY_ENTRY_BASERELOC"></a>5번 인덱스, IMAGE_DIRECTORY_ENTRY_BASERELOC</h3><p><strong>기본 재배치(Base Relocation) 정보</strong>를 가리켜요.</p>
+<p><strong>재배치</strong>는 무엇일까요?<br>로더가 실행 모듈을 원하는 위치, 즉 IMAGE_OPTIONAL_HEADER의 <strong>ImageBase 필드에 지정된 가상 주소 공간의 주소에 위치시키지 못했을 때 코드 상의 포인터 연산과 관련된 주소를 다시 갱신해야 하는 경우</strong>를 재배치 라고 불러요!</p>
+<p>저번에 말했듯이 EXE의 경우에는 이런 상황이 거의 없어요. 그 이유는 EXE 파일보다 DLL이 먼저 메모리에 로딩되기 때문이에요. 그에 반면 DLL의 경우에는 빈번히 발생하죠.<br>이를 위해 재배치 섹셔이 존재하는데, 이 필드가 재배치 섹션의 시작 주소를 가리켜요.</p>
+<br>
+
+<h3 id="6번-인덱스-IMAGE-DIRECTORY-ENTRY-DEBUG"><a href="#6번-인덱스-IMAGE-DIRECTORY-ENTRY-DEBUG" class="headerlink" title="6번 인덱스, IMAGE_DIRECTORY_ENTRY_DEBUG"></a>6번 인덱스, IMAGE_DIRECTORY_ENTRY_DEBUG</h3><p><strong>IMAGE_DEBUG_DIRECTORY 구조체의 배열을 가리키는 번지</strong>에요.<br>각각 해당 <strong>이미지의 디버그 정보를 가지고 있죠.</strong></p>
+<p>초기 볼랜드 링커의 경우 이 인덱스에 해당하는 IMAGE_DATA_DIRECTORY 엔트리의 Size 필드를 이 섹션의 바이트 수가 아니라 구조체의 수로 세트했다고 해요.</p>
+<p>물론 지금은 섹션의 크기를 가지고 있어요!<br>따라서 IMAGE_DEBUG_DIRECTORY 구조체의 수를 얻기 위해서는 Size 필드의 값을 IMAGE_DEBUG_DIRECTORY 구조체의 바이트 수(28 바이트)로 나누면 되요.</p>
+<br>
+
+<h3 id="7번-인덱스-IMAGE-DIRECTORY-ENTRY-ARCHITECTURE"><a href="#7번-인덱스-IMAGE-DIRECTORY-ENTRY-ARCHITECTURE" class="headerlink" title="7번 인덱스, IMAGE_DIRECTORY_ENTRY_ARCHITECTURE"></a>7번 인덱스, IMAGE_DIRECTORY_ENTRY_ARCHITECTURE</h3><p><strong>아키텍처에 대한 구체적인 데이터, IMAGE_ARCHITECTURE_HEADER 구조체의 배열에 대한 시작 번지</strong>를 가리켜요.</p>
+<p>X86 또는 IA-64 계열에서는 사용하지 않아요.<br>애초에 인텔 계열 CPU를 위해 만들어진 운영체제 이기 때문에 아키텍처에 대한 구체적인 데이터가 필요가 없는거죠!</p>
+<br>
+
+<h3 id="8번-인덱스-IMAGE-DIRECTORY-ENTRY-GLOBALPTR"><a href="#8번-인덱스-IMAGE-DIRECTORY-ENTRY-GLOBALPTR" class="headerlink" title="8번 인덱스, IMAGE_DIRECTORY_ENTRY_GLOBALPTR"></a>8번 인덱스, IMAGE_DIRECTORY_ENTRY_GLOBALPTR</h3><p><strong>글로벌 포인터 레지스터(GP, Global Pointer)로 사용되는 시작 번지</strong>를 가리켜요.<br>x86에서는 사용되지 않지만, IA-64 에서는 사용되요.<br>여기서 Size 필드는 필요가 없어요. 사용되지 않아요.</p>
+<br>
+
+<h3 id="9번-인덱스-IMAGE-DIRECTORY-ENTRY-TLS"><a href="#9번-인덱스-IMAGE-DIRECTORY-ENTRY-TLS" class="headerlink" title="9번 인덱스, IMAGE_DIRECTORY_ENTRY_TLS"></a>9번 인덱스, IMAGE_DIRECTORY_ENTRY_TLS</h3><p><strong>스레드 지역 저장소 초기화 섹션에 대한 시작 번지</strong>를 가리켜요.<br>별도의 TLS 함수를 사용하지 않고 __declspec(thread)라는 지시어를 통해 변수가 선언되면 이 변수는 TLS에 들어가게 되고 이를 위해 링커는 별도의 TLS 섹션을 만들게 되죠.</p>
+<br>
+
+<h3 id="10번-인덱스-IMAGE-DIRECTROY-ENTRY-LOAD-CONFIG"><a href="#10번-인덱스-IMAGE-DIRECTROY-ENTRY-LOAD-CONFIG" class="headerlink" title="10번 인덱스, IMAGE_DIRECTROY_ENTRY_LOAD_CONFIG"></a>10번 인덱스, IMAGE_DIRECTROY_ENTRY_LOAD_CONFIG</h3><p><strong>IMAGE_LOAD_CONFIG_DIRECTORY 구조체애 대한 시작 번지</strong>를 가리켜요.<br>Windows NT, Windows 2000, Windows XP의 구체적인 정보가 들어가 있다고해요.</p>
+<p>이 구조체를 실행 파일에 집어 넣으러면 IMAGE_LOAD_CONFIG_DIRECTORY 구조체를 _load_config_used라는 이름으로 전역적으로 정의 해야 한다고 해요</p>
+<figure class="highlight nimrod"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">extern <span class="string">"C"</span></span><br><span class="line"></span><br><span class="line"><span class="type">IMAGE_LOAD_CONFIG_DIRECTORY</span> __load_config_used = <span class="meta">&#123;...&#125;</span>;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="11번-인덱스-IMAGE-DIRECTORY-ENTRY-BOUND-IMPORT"><a href="#11번-인덱스-IMAGE-DIRECTORY-ENTRY-BOUND-IMPORT" class="headerlink" title="11번 인덱스, IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT"></a>11번 인덱스, IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT</h3><p><strong>IMAGE_BOUND_IMPORT_DESCRIPTOR 구조체 배열에 대한 시작 번지</strong>를 가리켜요.<br><strong>DLL 바인딩과 관련된 정보</strong>를 가리켜요.</p>
+<p>이 필드도 중요한 녀석이죠! 나중에 더 상세하게 다룰 예정입니다!</p>
+<br>
+
+<h3 id="12번-인덱스-IMAGE-DIRECTORY-ENTRY-IAT"><a href="#12번-인덱스-IMAGE-DIRECTORY-ENTRY-IAT" class="headerlink" title="12번 인덱스, IMAGE_DIRECTORY_ENTRY_IAT"></a>12번 인덱스, IMAGE_DIRECTORY_ENTRY_IAT</h3><p><strong>첫 번째 임포트 주소 테이블(IAT, Import Address Table)의 시작 번지</strong>를 가리켜요.<br>임포트된 각각의 DLL에 대한 IAT는 메모리 상에서 연속적으로 나타나게 되요.<br>Size 필드는 모든 IAT의 전체 크기를 가리켜요.</p>
+<p>로더는 임포트 섹션을 해석할 동안 이 엔트리의 주소와 크기를 이용해서 임시적으로 IAT들을 읽기/쓰기 모드로 마킹한다고 해요.</p>
+<br>
+
+<h3 id="13번-인덱스-IMAGE-DIRECTORY-ENTRY-DELAY-IMPORT"><a href="#13번-인덱스-IMAGE-DIRECTORY-ENTRY-DELAY-IMPORT" class="headerlink" title="13번 인덱스, IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT"></a>13번 인덱스, IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT</h3><p>Visual C++ 이 제공하는 DELAYTMP.H 헤더 파일에 정의되어 있는 <strong>ImgDelayDescr 구조체의 배열을 가리키는 시작 번지</strong>에요.</p>
+<p><strong>지연 로딩 DLL은 해당 API가 처음으로 호출되기 전까지 로드되지 않아요.</strong><br>윈도우는 지연 로딩 DLL에 대한 어떠한 암시적인 정보고 가지고 있지 않아요.<br>전적으로 지연 로딩의 정보는 링커나 런타임 라이브러리에 구현되어 있죠.</p>
+<br>
+
+<h3 id="14번-인덱스-IMAGE-DIRECTORY-ENTRY-COM-DESCRIPTOR"><a href="#14번-인덱스-IMAGE-DIRECTORY-ENTRY-COM-DESCRIPTOR" class="headerlink" title="14번 인덱스, IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR"></a>14번 인덱스, IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR</h3><p>업데이트된 시스템 헤더 파일에 IMAGE_DIRECTORY_ENTRY_COMHEADER 라는 이름으로 변경되었다고 해요.</p>
+<p>이 필드의 정보는 .NET 응용 애플리케이션이나 DLL용 PE를 위한 거라고 해요.<br>PE 내의 .NET 정보에 대한 최상위 정보의 시작 번지를 가리킨다고 해요.</p>
+<p>이 정보 같은 경우에는 IMAGE_COR20_HEADER 구조체의 형태로 구성되었다고 합니다.</p>
+<br>
+
+<h2 id="마지막으로…"><a href="#마지막으로…" class="headerlink" title="마지막으로…"></a>마지막으로…</h2><p>모두 다 알면 좋겠지만, <strong>Export Directory, Import Directory, Exception Directory, Base Relocation Table, Bound Import Directory, Import Address Table(IAT), Delay Load Import Descriptors</strong>에 해당 하는 섹션들은 확실하게 공부를 해야한다고 생각을 합니다!</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><hr>
+<p><a href="https://docs.microsoft.com/ko-kr/windows/win32/api/winnt/ns-winnt-image_data_directory" target="_blank" rel="noopener">IMAGE_DATA_DIRECTORY</a></p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/18/UnderstandPE4/" rel="next" title="PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조">
+                  <i class="fa fa-chevron-left"></i> PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IMAGE-DATA-DIRECTORY의-시작"><span class="nav-number">1.</span> <span class="nav-text">IMAGE_DATA_DIRECTORY의 시작</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IMAGE-DATA-DIRECTORY-ENTRY의-종류"><span class="nav-number">2.</span> <span class="nav-text">IMAGE_DATA_DIRECTORY_ENTRY의 종류</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0번-인덱스-IMAGE-DIRECTORY-ENTRY-EXPORT"><span class="nav-number">2.1.</span> <span class="nav-text">0번 인덱스, IMAGE_DIRECTORY_ENTRY_EXPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1번-인덱스-IMAGE-DIRECTORY-ENTRY-IMPORT"><span class="nav-number">2.2.</span> <span class="nav-text">1번 인덱스, IMAGE_DIRECTORY_ENTRY_IMPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2번-인덱스-IMAGE-DIRECTORY-ENTRY-RESOURCE"><span class="nav-number">2.3.</span> <span class="nav-text">2번 인덱스, IMAGE_DIRECTORY_ENTRY_RESOURCE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3번-인덱스-IMAGE-DIRECTORY-ENTRY-EXCEPTION"><span class="nav-number">2.4.</span> <span class="nav-text">3번 인덱스, IMAGE_DIRECTORY_ENTRY_EXCEPTION</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4번-인덱스-IMAGE-DIRECTORY-ENTRY-SECURITY"><span class="nav-number">2.5.</span> <span class="nav-text">4번 인덱스, IMAGE_DIRECTORY_ENTRY_SECURITY</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5번-인덱스-IMAGE-DIRECTORY-ENTRY-BASERELOC"><span class="nav-number">2.6.</span> <span class="nav-text">5번 인덱스, IMAGE_DIRECTORY_ENTRY_BASERELOC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6번-인덱스-IMAGE-DIRECTORY-ENTRY-DEBUG"><span class="nav-number">2.7.</span> <span class="nav-text">6번 인덱스, IMAGE_DIRECTORY_ENTRY_DEBUG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7번-인덱스-IMAGE-DIRECTORY-ENTRY-ARCHITECTURE"><span class="nav-number">2.8.</span> <span class="nav-text">7번 인덱스, IMAGE_DIRECTORY_ENTRY_ARCHITECTURE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8번-인덱스-IMAGE-DIRECTORY-ENTRY-GLOBALPTR"><span class="nav-number">2.9.</span> <span class="nav-text">8번 인덱스, IMAGE_DIRECTORY_ENTRY_GLOBALPTR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9번-인덱스-IMAGE-DIRECTORY-ENTRY-TLS"><span class="nav-number">2.10.</span> <span class="nav-text">9번 인덱스, IMAGE_DIRECTORY_ENTRY_TLS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10번-인덱스-IMAGE-DIRECTROY-ENTRY-LOAD-CONFIG"><span class="nav-number">2.11.</span> <span class="nav-text">10번 인덱스, IMAGE_DIRECTROY_ENTRY_LOAD_CONFIG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11번-인덱스-IMAGE-DIRECTORY-ENTRY-BOUND-IMPORT"><span class="nav-number">2.12.</span> <span class="nav-text">11번 인덱스, IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12번-인덱스-IMAGE-DIRECTORY-ENTRY-IAT"><span class="nav-number">2.13.</span> <span class="nav-text">12번 인덱스, IMAGE_DIRECTORY_ENTRY_IAT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13번-인덱스-IMAGE-DIRECTORY-ENTRY-DELAY-IMPORT"><span class="nav-number">2.14.</span> <span class="nav-text">13번 인덱스, IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14번-인덱스-IMAGE-DIRECTORY-ENTRY-COM-DESCRIPTOR"><span class="nav-number">2.15.</span> <span class="nav-text">14번 인덱스, IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#마지막으로…"><span class="nav-number">3.</span> <span class="nav-text">마지막으로…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고자료"><span class="nav-number">4.</span> <span class="nav-text">참고자료</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">777bareman777</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span>
+        
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">777bareman777</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

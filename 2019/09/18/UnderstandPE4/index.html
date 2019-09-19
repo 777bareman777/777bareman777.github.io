@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_OPTIONAL_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_OPTIONAL_HEADER의 시작IMAGE_FILE_HEADER에 이어서 나오는 구조체는 224바이트로 구성된 IMAGE_OPTIONAL_HE">
+<meta name="keywords" content="Windows">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조">
+<meta property="og:url" content="http://777bareman777.github.io/2019/09/18/UnderstandPE4/index.html">
+<meta property="og:site_name" content="777bareman777 Blog">
+<meta property="og:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_OPTIONAL_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_OPTIONAL_HEADER의 시작IMAGE_FILE_HEADER에 이어서 나오는 구조체는 224바이트로 구성된 IMAGE_OPTIONAL_HE">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-09-19T11:25:32.416Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조">
+<meta name="twitter:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_OPTIONAL_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_OPTIONAL_HEADER의 시작IMAGE_FILE_HEADER에 이어서 나오는 구조체는 224바이트로 구성된 IMAGE_OPTIONAL_HE">
+  <link rel="canonical" href="http://777bareman777.github.io/2019/09/18/UnderstandPE4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조 | 777bareman777 Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">777bareman777 Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">켄넬 교육받은 댕댕이</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/18/UnderstandPE4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-18 14:46:56" itemprop="dateCreated datePublished" datetime="2019-09-18T14:46:56+09:00">2019-09-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-09-19 20:25:32" itemprop="dateModified" datetime="2019-09-19T20:25:32+09:00">2019-09-19</time>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요.</p>
+<p>PE파일의 PE 시그니처 다음에 이어지는 <strong>IMAGE_OPTIONAL_HEADER</strong>에 대한 내용을 알아볼 거에요.</p>
+<br>
+
+<h2 id="IMAGE-OPTIONAL-HEADER의-시작"><a href="#IMAGE-OPTIONAL-HEADER의-시작" class="headerlink" title="IMAGE_OPTIONAL_HEADER의 시작"></a>IMAGE_OPTIONAL_HEADER의 시작</h2><p>IMAGE_FILE_HEADER에 이어서 나오는 구조체는 <strong>224바이트</strong>로 구성된 <strong>IMAGE_OPTIONAL_HEADER</strong> 이에요.</p>
+<p>IMAGE_OPTIONAL_HEADER 구조체는 <strong>96바이트를 차지하는 30개의 기본 필드</strong>와 <strong>8바이트 크기의 IMAGE_DATA_DIRECTORY 구조체에 대한 엔트리 개수가 16개인 배열 128(=8*16)바이트</strong>로 구성되어 있어요.</p>
+<p>-&gt; IMAGE_OPTIONAL_HEADER32 구조체를 가지고 설명. </p>
+<p>-&gt; 64비트 같은 경우에는 BaseOfData 부분이 없으며, 메모리 영역 부분이 DWORD 형이 아닌 ULONGLONG 형으로 선언이 되어있고, 데이터 디렉토리 구조체의 크기가 고정되어 있지 않음.</p>
+<p>구조체는 다음과 같이 “WinNT.h” 헤더 파일에 정의되어 있음.</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _IMAGE_OPTIONAL_HEADER &#123;</span><br><span class="line"></span><br><span class="line">	/*</span><br><span class="line">		<span class="type">Standard</span> fields.</span><br><span class="line">	*/</span><br><span class="line"></span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">Magic</span>;</span><br><span class="line">  <span class="type">BYTE</span>                 <span class="type">MajorLinkerVersion</span>;</span><br><span class="line">  <span class="type">BYTE</span>                 <span class="type">MinorLinkerVersion</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfCode</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfInitializedData</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfUninitializedData</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">AddressOfEntryPoint</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">BaseOfCode</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">BaseOfData</span>;</span><br><span class="line"></span><br><span class="line">	/*</span><br><span class="line">		<span class="type">NT</span> additional fields.</span><br><span class="line">	*/</span><br><span class="line"></span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">ImageBase</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SectionAlignment</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">FileAlignment</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MajorOperatingSystemVersion</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MinorOperatingSystemVersion</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MajorImageVersion</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MinorImageVersion</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MajorSubsystemVersion</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">MinorSubsystemVersion</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">Win32VersionValue</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfImage</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfHeaders</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">CheckSum</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">Subsystem</span>;</span><br><span class="line">  <span class="type">WORD</span>                 <span class="type">DllCharacteristics</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfStackReserve</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfStackCommit</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfHeapReserve</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">SizeOfHeapCommit</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">LoaderFlags</span>;</span><br><span class="line">  <span class="type">DWORD</span>                <span class="type">NumberOfRvaAndSizes</span>;</span><br><span class="line">  <span class="type">IMAGE_DATA_DIRECTORY</span> <span class="type">DataDirectory</span>[<span class="type">IMAGE_NUMBEROF_DIRECTORY_ENTRIES</span>];</span><br><span class="line">&#125; <span class="type">IMAGE_OPTIONAL_HEADER32</span>, *<span class="type">PIMAGE_OPTIONAL_HEADER32</span>;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="첫-번째-멤버-WORD-Magic"><a href="#첫-번째-멤버-WORD-Magic" class="headerlink" title="첫 번째 멤버, WORD Magic"></a>첫 번째 멤버, WORD Magic</h3><p>IMAGE_OPTIONAL_HEADER를 나타내는 <strong>시그니처</strong>에요. 이 값은 3<strong>2비트 PE의 경우 0x010B</strong>이고, <strong>64비트 PE의 경우 0x020B</strong>에요.<br>닷넴 프레임워크 .NET PE의 경우 항상 0x010B 라고 해요.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_NT_OPTIONAL_HDR32 0x10B</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_NT_OPTIONAL_HDR64_MAGIC 0x20B</span></span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="두-번째-멤버-BYTE-MajorLinkerVersion"><a href="#두-번째-멤버-BYTE-MajorLinkerVersion" class="headerlink" title="두 번째 멤버, BYTE MajorLinkerVersion"></a>두 번째 멤버, BYTE MajorLinkerVersion</h3><h3 id="세-번째-멤버-BYTE-MinorLinkerVersion"><a href="#세-번째-멤버-BYTE-MinorLinkerVersion" class="headerlink" title="세 번째 멤버, BYTE MinorLinkerVersion"></a>세 번째 멤버, BYTE MinorLinkerVersion</h3><p>P<strong>E 파일을 만들어낸 링커의 버전</strong>을 나타내요.<br>예를 드러 메이저 0x09, 마이너 0x0A라면 링커 버전 9.10을 나타내는 거죠.</p>
+<p>“Visual Studio.NET Command Prompt”를 실행시켜 Link.exe를 실행시키면 링커의 버전을 확인할 수 있다고 해요.</p>
+<br>
+
+<h3 id="네-번째-멤버-DWORD-SizeOfCode"><a href="#네-번째-멤버-DWORD-SizeOfCode" class="headerlink" title="네 번째 멤버, DWORD SizeOfCode"></a>네 번째 멤버, DWORD SizeOfCode</h3><p><strong>모든 코드 섹션들의 사이즈를 합한 라운드업된 크기</strong>에요.<br>일반적으로 실행 파일은 하나의 코드 섹션을 가지기 때문에 이 필드는 .text 섹션의 바이트 수와 동일해요.</p>
+<p><strong>정확하게 말하면, 섹션 중 “IMAGE_SCN_CNT_CODE” 속성을 가진 섹션들의 전체 크기</strong>라고 해요.<br>이러한 속성들은 IMAGE_SECTION_HEADER의 Characteristics에서 찾아볼 수 있어요.</p>
+<br>
+
+<h3 id="다섯-번째-멤버-DWORD-SizeOfInitializeData"><a href="#다섯-번째-멤버-DWORD-SizeOfInitializeData" class="headerlink" title="다섯 번째 멤버, DWORD SizeOfInitializeData"></a>다섯 번째 멤버, DWORD SizeOfInitializeData</h3><p><strong>코드 섹션을 제외한 초기화된 데이터 섹션의 전체 크기</strong>를 나타내요.<br><strong>초기화된 데이터 섹션은 “IMAGE_SCN_CNT_INITALIZED_DATA” 속성</strong>을 가져요.</p>
+<br>
+
+<h3 id="여섯-번째-멤버-DWORD-SizeOfUninitializedData"><a href="#여섯-번째-멤버-DWORD-SizeOfUninitializedData" class="headerlink" title="여섯 번째 멤버, DWORD SizeOfUninitializedData"></a>여섯 번째 멤버, DWORD SizeOfUninitializedData</h3><p><strong>초기화되지 않은 데이터 섹션(일반적으로 .bss 섹션 또는 .textbss 섹션)의 바이트수</strong>를 나타내요.</p>
+<p><strong>초기화되지 않은 데이터 섹션은 “IMAGE_SCN_CNT_UNINITALIZED_DATA” 속성</strong>을 가져요.</p>
+<p>일반적으로 초기화되지 않은 데이터를 일반 데이터 섹션에 병합시킬 수 있기 때문에 보통 이 필드의 값은 0이 된다.</p>
+<br>
+
+<h3 id="일곱-번째-멤버-DWORD-AddressOfEntryPoint"><a href="#일곱-번째-멤버-DWORD-AddressOfEntryPoint" class="headerlink" title="일곱 번째 멤버, DWORD AddressOfEntryPoint"></a>일곱 번째 멤버, DWORD AddressOfEntryPoint</h3><p><strong>로더가 실행을 시작할 주소</strong>를 나타내요. RVA 형태로 값이 저장되고, 일반적으로 <strong>.text 섹션 내의 특정 번지</strong>가 되요.<br>즉, 이 필드의 값은 <strong>프로그램이 처음으로 실행될 코드를 담고 있는 주소</strong>인 거죠.</p>
+<p>좀 더 자세히보면, 프로그램이 로드된 후 이 프로세스의 메인 스레드 문맥(Context)의 EIP/RIP 레지스터가 가질 수 있는 최초의 값이에요.<br>일반적으로 이 <strong>번지가 가리키는 값은 소위 말하는 런타임 시작 루틴(EXE의 경우 WinMainCRTStartup 또는 mainCRTStartup, DLL의 경우 DllMainCRTStartup)의 번지 값</strong>이에요.</p>
+<p>AddressOfEntryPoint 멤버는 중요한 필드죠!</p>
+<br>
+
+<h3 id="여덟-번째-멤버-DWORD-BaseOfCode"><a href="#여덟-번째-멤버-DWORD-BaseOfCode" class="headerlink" title="여덟 번째 멤버, DWORD BaseOfCode"></a>여덟 번째 멤버, DWORD BaseOfCode</h3><p><strong>첫 번째 코드 섹션이 시작 되는 RVA값</strong>을 가지고 있어요.<br>코드 섹션은 전형적으로 PE 헤더 다음, 데이터 섹션 바로 직전에 있어요.</p>
+<p>MS 링커가 만들어내는 EXE의 RVA는 보통 0x1000인데, 이 값은 설정에 따라 바뀔 수 있어요.</p>
+<br>
+
+<h3 id="아홉-번째-멤버-DWORD-BaseOfData"><a href="#아홉-번째-멤버-DWORD-BaseOfData" class="headerlink" title="아홉 번째 멤버, DWORD BaseOfData"></a>아홉 번째 멤버, DWORD BaseOfData</h3><p>이론적으로 <strong>메모리에 로드될 때 데이터의 첫 번째 바이트의 RVA</strong>를 가리켜요.<br>그리고 이 필드의 값은 MS의 링커 버전에 따라 다르고, 64비트 PE에서는 없는 멤버에요.</p>
+<br>
+
+<h3 id="열-번째-멤버-ImageBase"><a href="#열-번째-멤버-ImageBase" class="headerlink" title="열 번째 멤버, ImageBase"></a>열 번째 멤버, ImageBase</h3><p>해당 <strong>PE가 가상 주소 공간에 매핑될 때, 매핑시키고자 하는 메모리 상의 시작 주소</strong>에요.</p>
+<p>그 주소가 사용되고 있지 않으면 로더는 이 멤버가 가리키는 값으로 매핑시키기를 원해요.</p>
+<p>만약에 PE 파일이 ImageBase가 가리키는 주소에 로드되면 로더는 기본 재배치를 수행하는 과정을 건너뛸 수 있어요.</p>
+<p><strong>EXE에 대해서 이 값은 기본 이미지 베이스의 값은 0x00400000</strong> 이고, <strong>DLL의 경우 이 값은 0x10000000</strong> 이에요. 이 값들은 링크 시 옵션 /BASE를 지정함으로써 변결될 수 있어요.</p>
+<h4 id="추가적으로…"><a href="#추가적으로…" class="headerlink" title="추가적으로…"></a>추가적으로…</h4><p>일반적으로 PE 파일이 가상 메모리 공간에 매핑될 때, DLL 파일보다 EXE 파일이 먼저 올라가게 되요. 그래서 EXE 파일이 메모리에 올라갈 때 재배치 과정을 거치지 않아요. 하지만 DLL의 경우에는 그 해당하는 위치가 다른 녀석들이 이미 올라가 있는 경우가 많아서 재배치 과정을 거쳐요.</p>
+<p>요즘에는 윈도우의 보호기법 중 하나인 ASLR(Address space layout randomization) 때문에 ImageBase에 있는 주소에 PE 파일들이 매핑되지 않고, 랜덤으로 가상 메모리 공간에 매핑이 되요!</p>
+<br> 
+
+<h3 id="열한-번째-멤버-SectionAlignment"><a href="#열한-번째-멤버-SectionAlignment" class="headerlink" title="열한 번째 멤버, SectionAlignment"></a>열한 번째 멤버, SectionAlignment</h3><p><strong>PE 파일이 메모리에 매핑될 때</strong> 각 섹션의 시작 주소는 언제나 이 <strong>SectionAlignment 필드에서 지정된 값의 배수가 되는 가상 주소가 되도록 보장되요.</strong></p>
+<p>이러한 제한이 바로 <strong>PE 파일 자체가 메모리 맵 파일</strong>임을 말하고 있는 거에요. </p>
+<p>일반적인 파일들은 시스템 페이징 파일을 통해서 메모리에 매핑이 되지만, <strong>PE 파일 경우에 PE 파일 자체가 페이징 파일이 되기 떄문에 섹션의 시작 주소는 항상 메모리 페이지의 배수</strong>이어야 되요.</p>
+<p>PE 파일 자체가 메모리 맵 파일이라고 하더라도 <strong>메모리에서 PE 파일에 대한 변조가 일어나더라도 실제 파일에는 영향을 끼치지 않아요.</strong></p>
+<p>메모리 속성 중 “<strong>실행 가능</strong>“ 속성을 가지게 되면 이 페이지에 대한 “<strong>쓰기</strong>“ 동작에 대한 파일로의 반영은 “<strong>COW</strong>“ 라는 매커니즘을 통해서 페이지에 데이터를 갱신하게 되면 매핑된 파일로의 반영이 아니라 <strong>해당 데이터를 그 페이지에 갱신하기 직전에 페이지 파일(PageFile.sys)로 복사되어서 백업된 뒤 해당 페이지가 갱신</strong>되요.</p>
+<p>따라서 <strong>메모리에 매핑된 PE는 “실행 가능”속성을 지니기 때문에 디스크 상의 해당 PE 자체로의 즉각적인 반영이 이루어지지 않는거죠.</strong></p>
+<br>
+
+<h3 id="열두-번째-멤버-FileAlignment"><a href="#열두-번째-멤버-FileAlignment" class="headerlink" title="열두 번째 멤버, FileAlignment"></a>열두 번째 멤버, FileAlignment</h3><p><strong>PE 파일 내에서 섹션들의 정렬 단위</strong>를 나타내요.<br><strong>하드 디스크에 저장된 PE 파일 내의 각각의 섹션을 구성하는 바이너리 데이터들은 FileAlignemnt 필드의 값의 배수</strong>로 시작하도록 보장해요.</p>
+<p><strong>이 값이 실질적으로 디스크의 섹터 단위</strong>가 되는거죠.<br>NTFS의 경우 한 섹터는 디폴트로 4K이고, <strong>보통 0x200 아니면 0x100의 값</strong>을 가지고 있어요.<br>MS 링커 버전에 따라 기본 값은 변경이 되고, 무조건 이 값은 2의 멱승이 되어야 해요.</p>
+<p><strong>만약 SectionAlignment 필드의 값이 CPU 페이지 사이즈보다 작을 경우 이 필드는 SectionAlignment 필드의 값과 같아야 해요.</strong></p>
+<br>
+
+<h3 id="열세-번째-멤버-MajorOperatingSystemVersion"><a href="#열세-번째-멤버-MajorOperatingSystemVersion" class="headerlink" title="열세 번째 멤버, MajorOperatingSystemVersion"></a>열세 번째 멤버, MajorOperatingSystemVersion</h3><h3 id="열네-번째-멤버-MinorOperatingSystemVersion"><a href="#열네-번째-멤버-MinorOperatingSystemVersion" class="headerlink" title="열네 번째 멤버, MinorOperatingSystemVersion"></a>열네 번째 멤버, MinorOperatingSystemVersion</h3><p><strong>PE 파일을 실행하는 데 필요한 운영체제의 최소 버전</strong>을 말해요.<br>Windows 10 기반에서 컴파일과 링킹 과정을 거쳤다고 하더라도, 특정 버전 이상에서만 지원되는 기능 같은 것들을 사용하지 않으면 그 이전 버전에서도 돌아갈 수 있기 때문에 운영체제의 최소 버전 값이 정해져요.</p>
+<br>
+
+<h3 id="열다섯-번째-멤버-MajorImageVersion"><a href="#열다섯-번째-멤버-MajorImageVersion" class="headerlink" title="열다섯 번째 멤버, MajorImageVersion"></a>열다섯 번째 멤버, MajorImageVersion</h3><h3 id="열여섯-번째-멤버-MinorImageVersion"><a href="#열여섯-번째-멤버-MinorImageVersion" class="headerlink" title="열여섯 번째 멤버, MinorImageVersion"></a>열여섯 번째 멤버, MinorImageVersion</h3><p>유저가 정의 가능한 필드이며, 사<strong>용자가 만드는 EXE나 DLL에 유저 나름대로의 버전</strong>을 넣을 수 있어요.<br>링킹 시에 /VERSION 옵션을 사용해서 링킹을 해주면 되요.</p>
+<br>
+
+<h3 id="열일곱-번째-멤버-MajorSubsystemVersion"><a href="#열일곱-번째-멤버-MajorSubsystemVersion" class="headerlink" title="열일곱 번째 멤버, MajorSubsystemVersion"></a>열일곱 번째 멤버, MajorSubsystemVersion</h3><h3 id="열여덟-번째-멤버-MinorSubsystemVersion"><a href="#열여덟-번째-멤버-MinorSubsystemVersion" class="headerlink" title="열여덟 번째 멤버, MinorSubsystemVersion"></a>열여덟 번째 멤버, MinorSubsystemVersion</h3><p><strong>PE 파일을 실행하는 데 필요한 서브시스템의 최소 버전</strong>을 말해요.<br>링킹 시에 /SUBSYSTEM 스위치로 변경할 수 있어요.</p>
+<br>
+
+<h3 id="열아홉-번째-멤버-Win32VersionValue"><a href="#열아홉-번째-멤버-Win32VersionValue" class="headerlink" title="열아홉 번째 멤버, Win32VersionValue"></a>열아홉 번째 멤버, Win32VersionValue</h3><p>이 필드는 VC++ 6.0 SDK 까지는 예약 필드였는데, 7.0에 와서 Win32VersionValue 라는 이름을 가진 필드로 바뀌었고, 보통 0으로 결정되요.</p>
+<br>
+
+<h3 id="스물-번째-멤버-DWORD-SizeOfImage"><a href="#스물-번째-멤버-DWORD-SizeOfImage" class="headerlink" title="스물 번째 멤버, DWORD SizeOfImage"></a>스물 번째 멤버, DWORD SizeOfImage</h3><p>이 멤버는 <strong>로더가 해당 PE 파일을 메모리 상에 로드할 때 확보/예약해야 할 해당 PE를 위한 충분한 크기 값</strong>을 가져요.<br>PE 파일의 크기와 같을 수도 있지만 <strong>PE 파일 상에서의 섹션의 배치가 메모리에 매핑되면서 달라질 수 있기 때문에 보통은 PE 파일의 크기보다 커요.</strong></p>
+<p><strong>이 필드의 값은 반드시 SectionAlignment 필드의 값의 배수</strong>가 되어야 해요.</p>
+<br>
+
+<h3 id="스물-첫-번째-멤버-DWORD-SizeOfHeaders"><a href="#스물-첫-번째-멤버-DWORD-SizeOfHeaders" class="headerlink" title="스물 첫 번째 멤버, DWORD SizeOfHeaders"></a>스물 첫 번째 멤버, DWORD SizeOfHeaders</h3><p>이 필드는 <strong>MS-DOS 헤더, PE 헤더, 섹션 테이블들의 크기를 모두 합친 바이트의 수</strong>에요.<br><strong>모든 헤더나 테이블들은 PE 파일 상에서 반드시 코드 또는 데이터 섹션의 앞쪽에 위치</strong>에 있어야 해요.</p>
+<p><strong>이 필드의 값은 FilaAlignment 필드 값의 배수</strong>가 되어야 해요.</p>
+<br>
+
+<h3 id="스물-두-번째-멤버-DWORD-CheckSum"><a href="#스물-두-번째-멤버-DWORD-CheckSum" class="headerlink" title="스물 두 번째 멤버, DWORD CheckSum"></a>스물 두 번째 멤버, DWORD CheckSum</h3><p>이름 그대로 이미지의 체크섬 값이다. PE 파일의 체크섬 값은 IMAGEHELP.DLL의 CheckSumMAppedFile API를 통해서 얻을 수 있으며, 체크섬 값은 커널 모드 드라이버나 시스템 DLL의 경우 요구 된다.<br>그 외의 경우라면 보통 0으로 설정이 된다.<br>/RELEASE 링커 스위치를 통해 이 필드를 설정을 할 수 있다.</p>
+<br>
+
+<h3 id="스물-세-번째-멤버-WORD-Subsystem"><a href="#스물-세-번째-멤버-WORD-Subsystem" class="headerlink" title="스물 세 번째 멤버, WORD Subsystem"></a>스물 세 번째 멤버, WORD Subsystem</h3><p><strong>Win32 아키텍처는 크게 유저 모드와 커널 모드로 나눌 수 있으며, 유저 모드에는 서브시스템이라는 컴포넌트가 존재</strong>해요.</p>
+<p>Win32에서 지원하는 기본 서브 시스템은 Win32 서브시스템, 이전 OS/2와의 호환을 위한 OS/2 서브시스템, 이전 UNIX와의 호환을 위해 최소 표준으로 지원되는 POSIX/CUI 서브시스템 이렇게 3가지 정도가 있다고 해요.</p>
+<p>어떤 서브시스템을 지원하는지 알고 싶으면, “WinNT.h” 헤더 파일에 정의되어 있으니, 그것을 참고하면 되요.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_UNKNOWN              0   <span class="comment">// Unknown subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_NATIVE               1   <span class="comment">// Image doesn't require a subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_WINDOWS_GUI          2   <span class="comment">// Image runs in the Windows GUI subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_WINDOWS_CUI          3   <span class="comment">// Image runs in the Windows character subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_OS2_CUI              5   <span class="comment">// image runs in the OS/2 character subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_POSIX_CUI            7   <span class="comment">// image runs in the Posix character subsystem.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_NATIVE_WINDOWS       8   <span class="comment">// image is a native Win9x driver.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_WINDOWS_CE_GUI       9   <span class="comment">// Image runs in the Windows CE subsystem.</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_EFI_APPLICATION      10  <span class="comment">//</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER  11   <span class="comment">//</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER   12  <span class="comment">//</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_EFI_ROM              13</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_XBOX                 14</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION 16</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_SUBSYSTEM_XBOX_CODE_CATALOG    17</span></span><br></pre></td></tr></table></figure>
+
+<p>대부분의 경우 IMAGE_SUBSYSTEM_WINDOS_GUI 또는 IMAGE_SUBSYSTEM_WINDOWS_CUI 이에요.</p>
+<p>WinMain()으로 시작하는 경우 IMAGE_SUBSYSTEM_WINDOWS_GUI 인 0x0002가 될 것이고, main()으로 시작하는 콘솔 응용 애플리케이션의 경우 IMAGE_SUBSYSTEM_WINDOWS_CUI인 0x0003이 될거에요.</p>
+<p>그 이외의 다바이스 드라이버 같이 별도로 서브시스템을 사용하지 않는 경우 IMAGE_SUBSYSTEM_NATIVE인 0x00001의 값을 가지게 되요.</p>
+<br>
+
+<h3 id="스물-네-번째-멤버-WORD-DllCharacteristics"><a href="#스물-네-번째-멤버-WORD-DllCharacteristics" class="headerlink" title="스물 네 번째 멤버, WORD DllCharacteristics"></a>스물 네 번째 멤버, WORD DllCharacteristics</h3><p>이 멤버는 <strong>PE가 DLL 이라는 전제 하에 어떤 상황에서 DLL 초기화 함수(DLLMain())을 호출 되어야 하는지를 지시하는 플래그 값</strong>이 저장되어 있어요.</p>
+<p>“WinNT.h” 헤더 파일에 이 필드에 집어 넣을 수 있는 매크로 정의가 되어 있어요.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DllCharacteristics Entries</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//      IMAGE_LIBRARY_PROCESS_INIT            0x0001     // Reserved.</span></span><br><span class="line"><span class="comment">//      IMAGE_LIBRARY_PROCESS_TERM            0x0002     // Reserved.</span></span><br><span class="line"><span class="comment">//      IMAGE_LIBRARY_THREAD_INIT             0x0004     // Reserved.</span></span><br><span class="line"><span class="comment">//      IMAGE_LIBRARY_THREAD_TERM             0x0008     // Reserved.</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA    0x0020  <span class="comment">// Image can handle a high entropy 64-bit virtual address space.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE 0x0040     <span class="comment">// DLL can move.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_FORCE_INTEGRITY    0x0080     <span class="comment">// Code Integrity Image</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_NX_COMPAT    0x0100     <span class="comment">// Image is NX compatible</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_NO_ISOLATION 0x0200     <span class="comment">// Image understands isolation and doesn't want it</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_NO_SEH       0x0400     <span class="comment">// Image does not use SEH.  No SE handler may reside in this image</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_NO_BIND      0x0800     <span class="comment">// Do not bind this image.</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_APPCONTAINER 0x1000     <span class="comment">// Image should execute in an AppContainer</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_WDM_DRIVER   0x2000     <span class="comment">// Driver uses WDM model</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_GUARD_CF     0x4000     <span class="comment">// Image supports Control Flow Guard.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE     0x8000</span></span><br></pre></td></tr></table></figure>
+
+<p>이 중 DllMain() 정의시 아래의 대응 관계처럼 이 진입점 함수의 파라미터로 넘어오는 fdwReason의 가능한 네가지 값과 동일한 위상이라고 볼 수 있어요.</p>
+<ul>
+<li>IMAGE_LIBRARY_PROCESS_INIT &lt; - &gt; DLL_PROCESS_ATTACH</li>
+<li>IMAGE_LIBRARY_PROCESS_TERM &lt; - &gt; DLL_PROCESS_DEATCH</li>
+<li>IMAGE_LIBRARY_THREAD_INIT &lt; - &gt; DLL_THREAD_ATTACH</li>
+<li>IMAGE_LIBRARY_THREAD_TERM &lt; - &gt; DLL_PROCESS_DETACH</li>
+</ul>
+<p>하지만 이 필드의 값은 EXE의 경우에도 0이며, DLL의 경우에도 0이에요.<br>MS는 위의 예약어에 해당하는 네 가지 플래그를 더이상 사용하지 않고 IMAGE_DLLCHARACTERISTIC_XXX 라는 플래그들을 추가했어요.</p>
+<ul>
+<li><p>IMAGE_DLLCHARACTERISTICS_NO_SEH ( 0x0400)</p>
+<blockquote><p>구조적 예외 핸들링(SEH, Structured Exception Handling)을 사용하지 않는다. 구조적 예외 핸들링은 Win32 시스템에서 제공하는 기능(C++ 에서의 try{…}catch(…){…{ 예외 제어 구문과 비슷한 기능)이다.</p>
+<p>Visual C++ 컴파일러의 경우 이 SEH를 지원하기 위해 <strong>try{…}</strong>except(…){…} 라는 키워드를 제공한다. 이 플래그의 경우 VC++ 6.0에서는 지원하지 않음.</p>
+</blockquote>
+</li>
+<li><p>IMAGE_DLLCHARACTERISTICS_NO_BIND ( 0x0800)</p>
+<blockquote><p>이 플래그는 이 이미지를 바인딩하지 않음을 의미함. VC++ 6.0 에서는 없는 정의</p>
+</blockquote>
+</li>
+<li><p>IMAGE_DLLCHARACTERISTICS_WDM_DRIVER ( 0x2000)</p>
+<blockquote><p>드라이버가 WDM 모델을 사용한다는 의미. WDM은 Windows Driver Model의 약자로서 모든 Microsoft Windows 운영체제에 걸쳐서 호환 가능한 소스코드로 구성되는 디바이스 드라이버를 작성할 수 있도록 소개된 모델임.</p>
+<p>WDM 룰을 따르는 커널 모드 드라이버를 WDM 드라이버라고 부름. DDK의 서브셋의 일종임.</p>
+</blockquote></li>
+<li><p>IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE ( 0x8000)</p>
+<blockquote><p>이 플래그는 터미널 서버가 터미널 서비스가 인식하지 못하는 애플리케이션을 로드시켰을 경우 실행 가능하도록 하기 위해 호환 가능한 코드를 담고 있는 DLL도 같이 로드시킬 수 있음을 의미함.</p>
+</blockquote>
+
+</li>
+</ul>
+<br>
+
+<h3 id="스물-다섯-번째-멤버-DWORD-SizeOfStackReserver"><a href="#스물-다섯-번째-멤버-DWORD-SizeOfStackReserver" class="headerlink" title="스물 다섯 번째 멤버, DWORD SizeOfStackReserver"></a>스물 다섯 번째 멤버, DWORD SizeOfStackReserver</h3><h3 id="스물-여섯-번째-멤버-DWORD-SizeOfStackCommit"><a href="#스물-여섯-번째-멤버-DWORD-SizeOfStackCommit" class="headerlink" title="스물 여섯 번째 멤버, DWORD SizeOfStackCommit"></a>스물 여섯 번째 멤버, DWORD SizeOfStackCommit</h3><h3 id="스물-일곱-번째-멤버-DWORD-SizeOfHeapReserve"><a href="#스물-일곱-번째-멤버-DWORD-SizeOfHeapReserve" class="headerlink" title="스물 일곱 번째 멤버, DWORD SizeOfHeapReserve"></a>스물 일곱 번째 멤버, DWORD SizeOfHeapReserve</h3><h3 id="스물-여덟-번째-멤버-DWORD-SizeOfHeapCommit"><a href="#스물-여덟-번째-멤버-DWORD-SizeOfHeapCommit" class="headerlink" title="스물 여덟 번째 멤버, DWORD SizeOfHeapCommit"></a>스물 여덟 번째 멤버, DWORD SizeOfHeapCommit</h3><p>프로세스는 가상 주소 공간에 자신만의 스택과 힙을 별도로 가져요.<br>프로세스 생성 시 시스템은 언제나 메인 스레드를 위한 디폴트 스택과 프로세스를 위한 디폴트 힙을 해당 프로세스 내에 생성 시켜 주는데, 이 <strong>스택과 힘의 크기와 속성에 관계된 설정</strong>을 이 필드에서 지정해요.</p>
+<p>PE 파일의 경우 로드되면서 하나의 프로세스가 되든지, DLL 이라면 특정 프로세스의 주소 공간 내부에 잠입해 들어가게 되는데요.<br>이때 <strong>스택과 힙의 예약 크기와 커밋 크기를 지정</strong>해줄 수 있어요.</p>
+<p>PE 파일이 메모리에 로드될 때 시스템은 이 필드들의 값을 참조하여 해당 프로세스에 디폴트 스택과 디폴트 힙을 만들어 줘요.</p>
+<p><strong>링커가 만들어낸 디폴트 값은 스택과 힙 모두 예약 크기 1M인 0x00100000 이며 커밋 크기는 1페이지에 해당하는 4K인 0x00001000</strong>이에요.</p>
+<br>
+
+<h3 id="스물-아홉-번째-멤버-DWORD-LoaderFlags"><a href="#스물-아홉-번째-멤버-DWORD-LoaderFlags" class="headerlink" title="스물 아홉 번째 멤버, DWORD LoaderFlags"></a>스물 아홉 번째 멤버, DWORD LoaderFlags</h3><p>이 필드는 0으로 설정이되요. 원래 목적은 디버깅 지원에 관계 되었다고 해요.</p>
+<br>
+
+<h3 id="서른-번째-멤버-DWORD-NumberOfRvaAndSizes"><a href="#서른-번째-멤버-DWORD-NumberOfRvaAndSizes" class="headerlink" title="서른 번째 멤버, DWORD NumberOfRvaAndSizes"></a>서른 번째 멤버, DWORD NumberOfRvaAndSizes</h3><p>이 필드는 바로 다음에 나올 주요 섹션들과 정보들의 위치와 크기를 나타내는  <strong>IMAGE_DATA_DIRECTORY 구조체 배열의 원소 개수를 의미</strong>해요.<br>책 에서는 이 구조체의 개수는 항상 16라서, 이 멤버의 값은 언제나 0x00000010 이라고 해요.</p>
+<p><strong>하지만 공식 문서에서 항상 그렇지 않다고 해요. 따라서 IMAGE_DATA_DIRECTORY 구조체 배열의 개수를 알기 위해서는 이 멤버의 값을 확인 해야 되요.</strong></p>
+<br>
+
+<h2 id="마지막으로…"><a href="#마지막으로…" class="headerlink" title="마지막으로…"></a>마지막으로…</h2><p>IMAGE_OPTIONAL_HEADER에서 기억하고 가야할 멤버들은 <strong>AddressOfEntryPoint, ImageBase, SectionAlignment, FileAlignment, SizeOfImage, NumberOfRvaAndSizes</strong> 라고 생각해요.</p>
+<p><strong>AddressOfEntryPoint</strong>는 OP의 주소 값이 들어가고,<br><strong>ImageBase</strong>는 가상 주소 공간에 매핑될 때, 매핑시키고자 하는 메모리 상의 주소 값이고,<br><strong>SectionAlignment</strong>는 메모리에 매핑될 때, 섹션의 크기를 확인할 때 사용하는 녀석이고,<br><strong>FileAlignemt</strong>는 파일 내에서, 섹션의 크기를 확인할 때 사용하는 녀석이고,<br><strong>SizeOfImage</strong>는 PE 파일을 메모리 상에 로드할 때 확보해야할 크기 값을 가지고 있는 녀석이고,<br><strong>NumberOfRvaAndSizes</strong>는 PE 파일 안에 있는 섹션들의 위치와 크기를 나타내는 녀석이므로 기억해야 한다고 생각해요!</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><hr>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header64" target="_blank" rel="noopener">IMAGE_OPTIONAL_HEADER</a></p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/18/UnderstandPE3/" rel="next" title="PE 구조 이해하기 - IMAGE_FILE_HEADER 구조">
+                  <i class="fa fa-chevron-left"></i> PE 구조 이해하기 - IMAGE_FILE_HEADER 구조
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/19/UnderstandPE5/" rel="prev" title="PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조">
+                  PE 구조 이해하기 - IMAGE_DATA_DIRECTORY 구조 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IMAGE-OPTIONAL-HEADER의-시작"><span class="nav-number">1.</span> <span class="nav-text">IMAGE_OPTIONAL_HEADER의 시작</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#첫-번째-멤버-WORD-Magic"><span class="nav-number">1.1.</span> <span class="nav-text">첫 번째 멤버, WORD Magic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#두-번째-멤버-BYTE-MajorLinkerVersion"><span class="nav-number">1.2.</span> <span class="nav-text">두 번째 멤버, BYTE MajorLinkerVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#세-번째-멤버-BYTE-MinorLinkerVersion"><span class="nav-number">1.3.</span> <span class="nav-text">세 번째 멤버, BYTE MinorLinkerVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#네-번째-멤버-DWORD-SizeOfCode"><span class="nav-number">1.4.</span> <span class="nav-text">네 번째 멤버, DWORD SizeOfCode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#다섯-번째-멤버-DWORD-SizeOfInitializeData"><span class="nav-number">1.5.</span> <span class="nav-text">다섯 번째 멤버, DWORD SizeOfInitializeData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#여섯-번째-멤버-DWORD-SizeOfUninitializedData"><span class="nav-number">1.6.</span> <span class="nav-text">여섯 번째 멤버, DWORD SizeOfUninitializedData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#일곱-번째-멤버-DWORD-AddressOfEntryPoint"><span class="nav-number">1.7.</span> <span class="nav-text">일곱 번째 멤버, DWORD AddressOfEntryPoint</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#여덟-번째-멤버-DWORD-BaseOfCode"><span class="nav-number">1.8.</span> <span class="nav-text">여덟 번째 멤버, DWORD BaseOfCode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#아홉-번째-멤버-DWORD-BaseOfData"><span class="nav-number">1.9.</span> <span class="nav-text">아홉 번째 멤버, DWORD BaseOfData</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열-번째-멤버-ImageBase"><span class="nav-number">1.10.</span> <span class="nav-text">열 번째 멤버, ImageBase</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#추가적으로…"><span class="nav-number">1.10.1.</span> <span class="nav-text">추가적으로…</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열한-번째-멤버-SectionAlignment"><span class="nav-number">1.11.</span> <span class="nav-text">열한 번째 멤버, SectionAlignment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열두-번째-멤버-FileAlignment"><span class="nav-number">1.12.</span> <span class="nav-text">열두 번째 멤버, FileAlignment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열세-번째-멤버-MajorOperatingSystemVersion"><span class="nav-number">1.13.</span> <span class="nav-text">열세 번째 멤버, MajorOperatingSystemVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열네-번째-멤버-MinorOperatingSystemVersion"><span class="nav-number">1.14.</span> <span class="nav-text">열네 번째 멤버, MinorOperatingSystemVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열다섯-번째-멤버-MajorImageVersion"><span class="nav-number">1.15.</span> <span class="nav-text">열다섯 번째 멤버, MajorImageVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열여섯-번째-멤버-MinorImageVersion"><span class="nav-number">1.16.</span> <span class="nav-text">열여섯 번째 멤버, MinorImageVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열일곱-번째-멤버-MajorSubsystemVersion"><span class="nav-number">1.17.</span> <span class="nav-text">열일곱 번째 멤버, MajorSubsystemVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열여덟-번째-멤버-MinorSubsystemVersion"><span class="nav-number">1.18.</span> <span class="nav-text">열여덟 번째 멤버, MinorSubsystemVersion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#열아홉-번째-멤버-Win32VersionValue"><span class="nav-number">1.19.</span> <span class="nav-text">열아홉 번째 멤버, Win32VersionValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-번째-멤버-DWORD-SizeOfImage"><span class="nav-number">1.20.</span> <span class="nav-text">스물 번째 멤버, DWORD SizeOfImage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-첫-번째-멤버-DWORD-SizeOfHeaders"><span class="nav-number">1.21.</span> <span class="nav-text">스물 첫 번째 멤버, DWORD SizeOfHeaders</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-두-번째-멤버-DWORD-CheckSum"><span class="nav-number">1.22.</span> <span class="nav-text">스물 두 번째 멤버, DWORD CheckSum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-세-번째-멤버-WORD-Subsystem"><span class="nav-number">1.23.</span> <span class="nav-text">스물 세 번째 멤버, WORD Subsystem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-네-번째-멤버-WORD-DllCharacteristics"><span class="nav-number">1.24.</span> <span class="nav-text">스물 네 번째 멤버, WORD DllCharacteristics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-다섯-번째-멤버-DWORD-SizeOfStackReserver"><span class="nav-number">1.25.</span> <span class="nav-text">스물 다섯 번째 멤버, DWORD SizeOfStackReserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-여섯-번째-멤버-DWORD-SizeOfStackCommit"><span class="nav-number">1.26.</span> <span class="nav-text">스물 여섯 번째 멤버, DWORD SizeOfStackCommit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-일곱-번째-멤버-DWORD-SizeOfHeapReserve"><span class="nav-number">1.27.</span> <span class="nav-text">스물 일곱 번째 멤버, DWORD SizeOfHeapReserve</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-여덟-번째-멤버-DWORD-SizeOfHeapCommit"><span class="nav-number">1.28.</span> <span class="nav-text">스물 여덟 번째 멤버, DWORD SizeOfHeapCommit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#스물-아홉-번째-멤버-DWORD-LoaderFlags"><span class="nav-number">1.29.</span> <span class="nav-text">스물 아홉 번째 멤버, DWORD LoaderFlags</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#서른-번째-멤버-DWORD-NumberOfRvaAndSizes"><span class="nav-number">1.30.</span> <span class="nav-text">서른 번째 멤버, DWORD NumberOfRvaAndSizes</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#마지막으로…"><span class="nav-number">2.</span> <span class="nav-text">마지막으로…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고자료"><span class="nav-number">3.</span> <span class="nav-text">참고자료</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">777bareman777</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span>
+        
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">777bareman777</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

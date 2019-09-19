@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_FILE_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_FILE_HEADER 구조체IMAGE_FILE_HEADER 구조체는 20바이트로 구성이 되어 있어요.이것도 당연히 “WinNT.h” 헤더 파일에 정의되">
+<meta name="keywords" content="Windows">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PE 구조 이해하기 - IMAGE_FILE_HEADER 구조">
+<meta property="og:url" content="http://777bareman777.github.io/2019/09/18/UnderstandPE3/index.html">
+<meta property="og:site_name" content="777bareman777 Blog">
+<meta property="og:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_FILE_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_FILE_HEADER 구조체IMAGE_FILE_HEADER 구조체는 20바이트로 구성이 되어 있어요.이것도 당연히 “WinNT.h” 헤더 파일에 정의되">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-09-19T11:25:32.416Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PE 구조 이해하기 - IMAGE_FILE_HEADER 구조">
+<meta name="twitter:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 PE 시그니처 다음에 이어지는 IMAGE_FILE_HEADER에 대한 내용을 알아볼 거에요.   IMAGE_FILE_HEADER 구조체IMAGE_FILE_HEADER 구조체는 20바이트로 구성이 되어 있어요.이것도 당연히 “WinNT.h” 헤더 파일에 정의되">
+  <link rel="canonical" href="http://777bareman777.github.io/2019/09/18/UnderstandPE3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>PE 구조 이해하기 - IMAGE_FILE_HEADER 구조 | 777bareman777 Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">777bareman777 Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">켄넬 교육받은 댕댕이</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/18/UnderstandPE3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">PE 구조 이해하기 - IMAGE_FILE_HEADER 구조
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-18 01:02:50" itemprop="dateCreated datePublished" datetime="2019-09-18T01:02:50+09:00">2019-09-18</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-09-19 20:25:32" itemprop="dateModified" datetime="2019-09-19T20:25:32+09:00">2019-09-19</time>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요.</p>
+<p>PE파일의 PE 시그니처 다음에 이어지는 <strong>IMAGE_FILE_HEADER</strong>에 대한 내용을 알아볼 거에요.</p>
+<br>
+
+<h2 id="IMAGE-FILE-HEADER-구조체"><a href="#IMAGE-FILE-HEADER-구조체" class="headerlink" title="IMAGE_FILE_HEADER 구조체"></a>IMAGE_FILE_HEADER 구조체</h2><p><strong>IMAGE_FILE_HEADER</strong> 구조체는 <strong>20바이트</strong>로 구성이 되어 있어요.<br>이것도 당연히 “WinNT.h” 헤더 파일에 정의되어 있어요.</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _IMAGE_FILE_HEADER &#123;</span><br><span class="line">  <span class="type">WORD</span>  <span class="type">Machine</span>;</span><br><span class="line">  <span class="type">WORD</span>  <span class="type">NumberOfSections</span>;</span><br><span class="line">  <span class="type">DWORD</span> <span class="type">TimeDateStamp</span>;</span><br><span class="line">  <span class="type">DWORD</span> <span class="type">PointerToSymbolTable</span>;</span><br><span class="line">  <span class="type">DWORD</span> <span class="type">NumberOfSymbols</span>;</span><br><span class="line">  <span class="type">WORD</span>  <span class="type">SizeOfOptionalHeader</span>;</span><br><span class="line">  <span class="type">WORD</span>  <span class="type">Characteristics</span>;</span><br><span class="line">&#125; <span class="type">IMAGE_FILE_HEADER</span>, *<span class="type">PIMAGE_FILE_HEADER</span>;</span><br></pre></td></tr></table></figure>
+
+<p>구조체 멤버에 대해 하나씩 설명을 해드릴게요.</p>
+<br>
+
+<h3 id="첫-번째-멤버-WORD-Machine"><a href="#첫-번째-멤버-WORD-Machine" class="headerlink" title="첫 번째 멤버, WORD Machine"></a>첫 번째 멤버, WORD Machine</h3><p>Machine 필드는 PE 파일의 CPU ID를 나타내요. 즉, 사용자가 <strong>어떤 CPU를 통해서 PE 파일을 생성했는지 알 수 있어요</strong>.</p>
+<p>C언어와 C++로 짜여진 코드 같은 경우에는 CPU 의존적이라서 이런 정보가 들어가 있나봐요.</p>
+<p>이것도 CPU ID에 해당하는 매크로 상수가 정의되어 있는데, 자주 사용되는 매크로 상수는 아래와 같아요</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_MACHINE_IA64              0x0200  <span class="comment">// Intel 64</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_MACHINE_AMD64             0x8664  <span class="comment">// AMD64 (K8)</span></span></span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="두-번째-멤버-WORD-NumberOfSections"><a href="#두-번째-멤버-WORD-NumberOfSections" class="headerlink" title="두 번째 멤버, WORD NumberOfSections"></a>두 번째 멤버, WORD NumberOfSections</h3><p><strong>PE 파일에서의 섹션의 수</strong>를 나타내요. IMAGE_SECTION_HEADER 구조체 배열의 원소의 개수. 즉, 해당 PE 파일의 섹션의 개수를 의미해요.</p>
+<br>
+
+<h3 id="세-번째-멤버-DWORD-TimeDateStamp"><a href="#세-번째-멤버-DWORD-TimeDateStamp" class="headerlink" title="세 번째 멤버, DWORD TimeDateStamp"></a>세 번째 멤버, DWORD TimeDateStamp</h3><p>OBj 파일이라면 컴파일러가, EXE 또는 DLL과 같은 PE 파일이라면 링커가 해당 <strong>파일을 만들어낸 시간</strong>을 의미해요.</p>
+<p>이 값은 1970년 1월 1일 09시(GMT 시간 기준)로부터 해당 파일을 만들어낸 시점까지의 초 단위로 표현해요.</p>
+<br>
+
+<h3 id="네-번째-멤버-DWOARD-PointerToSymbolTable"><a href="#네-번째-멤버-DWOARD-PointerToSymbolTable" class="headerlink" title="네 번째 멤버, DWOARD PointerToSymbolTable"></a>네 번째 멤버, DWOARD PointerToSymbolTable</h3><p>PointerToSymbolTable 필드는 말 그대로 심볼 테이블의 데이터를 가리키는 주소 값이 들어가는 영역이에요. 즉, <strong>COFF 심벌의 파일 오프셋 값</strong>을 가지고 있는 거에요.</p>
+<p><strong>이 필드 같은 경우에는 컴파일러에 의해 생성되는 OBJ 파일 또는 디버그 모드로 만들어져서 COFF 디버그 정보를 가진 PE 파일에서만 사용이 되요.</strong></p>
+<p>PE 파일은 복수의 디버그 포맷을 지원하기 떄문에 IMAGE_DIRECTORY_ENTRY_DEBUG 엔트리를 참조해야 되고요.</p>
+<p><em>요즘에는 COFF 심벌 테이블은 새로운 디버그 포맷에 의해 대체되어서 PE 파일 내에서는 거의 사용하지 않아요.</em><br>물론 링커 스위치를 /DEBUGTYPE:COFF로 지정할 경우 생성할 수 있어요.</p>
+<br>
+
+<h3 id="다섯-번째-멤버-DOWRD-NumberOfSymbols"><a href="#다섯-번째-멤버-DOWRD-NumberOfSymbols" class="headerlink" title="다섯 번째 멤버, DOWRD NumberOfSymbols"></a>다섯 번째 멤버, DOWRD NumberOfSymbols</h3><p><strong>PointerToSymbolTable 필드가 가리키는 COFF 심벌 테이블 내에서의 심벌의 수</strong>를 나타냄.</p>
+<p><em>이것도 마찬가지로 새로운 디버그 포맷에 의해 대체되어서 사용되지 않음.</em></p>
+<br>
+
+<h3 id="여섯-번째-멤버-WORD-SizeOfOptionalHeader"><a href="#여섯-번째-멤버-WORD-SizeOfOptionalHeader" class="headerlink" title="여섯 번째 멤버, WORD SizeOfOptionalHeader"></a>여섯 번째 멤버, WORD SizeOfOptionalHeader</h3><p>IMAGE_FILE_HEADER 구조체 바로 다음에 이어서 나오는 <strong>IMAGE_OPTIONAL_HEADER 구조체의 바이트 수</strong>를 나타내요. </p>
+<p>이 필드는 OBJ 파일의 경우 0이고, 실행 파일의 경우는 “sizeof(IMAGE_OPTIONAL_HEADER)”의 값을 가져요.</p>
+<p>32비트 PE 파일의 경우 0xE0(224)바이트이고, 64비트 PE 파일의 경우 0xF0(240)바이트에요.</p>
+<br>
+
+<h3 id="일곱-번째-멤버-WORD-Characteristics"><a href="#일곱-번째-멤버-WORD-Characteristics" class="headerlink" title="일곱 번째 멤버, WORD Characteristics"></a>일곱 번째 멤버, WORD Characteristics</h3><p><strong>PE 파일에 대한 특정 정보를 나타내는 플래그</strong>에요. 이 필드도 “WinNT.h” 헤더 파일에 정의되어 있어요.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_RELOCS_STRIPPED           0x0001  <span class="comment">// Relocation info stripped from file.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_EXECUTABLE_IMAGE          0x0002  <span class="comment">// File is executable  (i.e. no unresolved external references).</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_LINE_NUMS_STRIPPED        0x0004  <span class="comment">// Line nunbers stripped from file.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_LOCAL_SYMS_STRIPPED       0x0008  <span class="comment">// Local symbols stripped from file.</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_AGGRESIVE_WS_TRIM         0x0010  <span class="comment">// Aggressively trim working set</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_LARGE_ADDRESS_AWARE       0x0020  <span class="comment">// App can handle &gt;2gb addresses</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_BYTES_REVERSED_LO         0x0080  <span class="comment">// Bytes of machine word are reversed.</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_32BIT_MACHINE             0x0100  <span class="comment">// 32 bit word machine.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_DEBUG_STRIPPED            0x0200  <span class="comment">// Debugging info stripped from file in .DBG file</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP   0x0400  <span class="comment">// If Image is on removable media, copy and run from the swap file.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_NET_RUN_FROM_SWAP         0x0800  <span class="comment">// If Image is on Net, copy and run from the swap file.</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_SYSTEM                    0x1000  <span class="comment">// System File.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_DLL                       0x2000  <span class="comment">// File is a DLL.</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_UP_SYSTEM_ONLY            0x4000  <span class="comment">// File should only be run on a UP machine</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_FILE_BYTES_REVERSED_HI         0x8000  <span class="comment">// Bytes of machine word are reversed.</span></span></span><br></pre></td></tr></table></figure>
+
+<p>이 중에서도 중요한 것은 요것들이에요.</p>
+<table>
+<thead>
+<tr>
+<th>매크로명</th>
+<th>값</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IMAGE_FILE_RELOCS_STRIPPED</td>
+<td>0x0001</td>
+<td>현재 파일에 재배치 정보가 없음</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_EXECUTABLE_IMAGE</td>
+<td>0x0002</td>
+<td>본 파일은 실행 파일 이미지이다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_LINE_NUMS_STRIPPED</td>
+<td>0x0004</td>
+<td>본 파일에 라인 정보가 없다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_LOCAL_SYMS_STRIPPED</td>
+<td>0x0008</td>
+<td>본 파일에 로컬 심벌이 없다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_AGGRESIVE</td>
+<td>0x0010</td>
+<td>OS로 하여금 적극적으로 워킹셋을 정리할 수 있도록 한다</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_LARGE_ADD_RESS_AWARE</td>
+<td>0x0020</td>
+<td>애플리케이션이 2G 이상의 가상 주소 번지를 제어할 수 있도록한다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_32BIT_MACHINE</td>
+<td>0x0100</td>
+<td>본 PE는 32비트 워드 머신을 필요로 한다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_DEBUG_STRIPPED</td>
+<td>0x0200</td>
+<td>디버그 정보가 본 파일에는 없고 .DBG 파일에 존재한다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP</td>
+<td>0x0400</td>
+<td>PE 이미지가 이동 가능한 장치 위에 존재할 때 고정 디스크 상의 스왑 파일로 카피해서 실행한다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_NET_RUN_FROM_SWAP</td>
+<td>0x0800</td>
+<td>PE 이미지가 네트워크 상에 존재할 때 고정 디스크 상의 스왑 파일로 카피해서 실행한다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_DLL</td>
+<td>0x2000</td>
+<td>본 파일은 동적 링크 라이브러리 파일이다.</td>
+</tr>
+<tr>
+<td>IMAGE_FILE_UP_SYSTEM_ONLYT</td>
+<td>0x4000</td>
+<td>본 파일은 하나의 프로세서만을 장착한 머신에서 실행된다.</td>
+</tr>
+</tbody></table>
+<br>
+
+<h2 id="마지막으로…"><a href="#마지막으로…" class="headerlink" title="마지막으로…"></a>마지막으로…</h2><p>IMAGE_FILE_HEADER에 대해서 살펴봤는데요.<br><strong>여기서 중요한 멤버들은 섹션의 수를 조절할 수 있는 NumberOfSections 하고, PE 파일에 대한 특정 정보는 나타내는 플래그인 Characteristics</strong> 이에요.</p>
+<p>NumberOfSections을 조절하면, 우리가 원하는대로 임의의 섹션을 추가할 수 있어요. 이러한 방법을 이용해서 악성코드를 삽입도 가능하다고 해요!</p>
+<p>PE 파일에 특정 정보를 나타내는 플래그인 Characteristics 값의 조합을 알고 있으면, PE 파일을 분석할 필요 없이 이 값만을 가지고 PE 파일이 어떤 특징을 가지고 있는지 알 수 있을 거에요.</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><hr>
+<p><a href="https://docs.microsoft.com/ko-kr/windows/win32/api/winnt/ns-winnt-image_file_header" target="_blank" rel="noopener">IMAGE_FILE_HEADER</a></p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/18/UnderstandPE2/" rel="next" title="PE 구조 이해하기 - IMAGE_NT_HEADERS 구조">
+                  <i class="fa fa-chevron-left"></i> PE 구조 이해하기 - IMAGE_NT_HEADERS 구조
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/18/UnderstandPE4/" rel="prev" title="PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조">
+                  PE 구조 이해하기 - IMAGE_OPTIONAL_HEADER 구조 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IMAGE-FILE-HEADER-구조체"><span class="nav-number">1.</span> <span class="nav-text">IMAGE_FILE_HEADER 구조체</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#첫-번째-멤버-WORD-Machine"><span class="nav-number">1.1.</span> <span class="nav-text">첫 번째 멤버, WORD Machine</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#두-번째-멤버-WORD-NumberOfSections"><span class="nav-number">1.2.</span> <span class="nav-text">두 번째 멤버, WORD NumberOfSections</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#세-번째-멤버-DWORD-TimeDateStamp"><span class="nav-number">1.3.</span> <span class="nav-text">세 번째 멤버, DWORD TimeDateStamp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#네-번째-멤버-DWOARD-PointerToSymbolTable"><span class="nav-number">1.4.</span> <span class="nav-text">네 번째 멤버, DWOARD PointerToSymbolTable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#다섯-번째-멤버-DOWRD-NumberOfSymbols"><span class="nav-number">1.5.</span> <span class="nav-text">다섯 번째 멤버, DOWRD NumberOfSymbols</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#여섯-번째-멤버-WORD-SizeOfOptionalHeader"><span class="nav-number">1.6.</span> <span class="nav-text">여섯 번째 멤버, WORD SizeOfOptionalHeader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#일곱-번째-멤버-WORD-Characteristics"><span class="nav-number">1.7.</span> <span class="nav-text">일곱 번째 멤버, WORD Characteristics</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#마지막으로…"><span class="nav-number">2.</span> <span class="nav-text">마지막으로…</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고자료"><span class="nav-number">3.</span> <span class="nav-text">참고자료</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">777bareman777</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span>
+        
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">777bareman777</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

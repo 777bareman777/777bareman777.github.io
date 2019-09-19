@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="아는 형한테 github page와 hexo를 통해서 블로그를 만들 수 있다고 이야기를 들었다.티스토리 보다는 간지나게 hexo로 블로그를 관리해보자라는 욕심으로 정보를 찾아봤다.하지만 그 이야기를 들었으면 안됬다.    이제부터 시작이다 나의 hexo 삽질이 ….   Git Page로 정적 페이지 Hosting하기Git Page를 통해 USERNAME.g">
+<meta name="keywords" content="hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo 블로그 만들기 삽질 일지 - 1">
+<meta property="og:url" content="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/index.html">
+<meta property="og:site_name" content="777bareman777 Blog">
+<meta property="og:description" content="아는 형한테 github page와 hexo를 통해서 블로그를 만들 수 있다고 이야기를 들었다.티스토리 보다는 간지나게 hexo로 블로그를 관리해보자라는 욕심으로 정보를 찾아봤다.하지만 그 이야기를 들었으면 안됬다.    이제부터 시작이다 나의 hexo 삽질이 ….   Git Page로 정적 페이지 Hosting하기Git Page를 통해 USERNAME.g">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/sibal.jpeg">
+<meta property="og:updated_time" content="2019-09-19T11:25:32.415Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo 블로그 만들기 삽질 일지 - 1">
+<meta name="twitter:description" content="아는 형한테 github page와 hexo를 통해서 블로그를 만들 수 있다고 이야기를 들었다.티스토리 보다는 간지나게 hexo로 블로그를 관리해보자라는 욕심으로 정보를 찾아봤다.하지만 그 이야기를 들었으면 안됬다.    이제부터 시작이다 나의 hexo 삽질이 ….   Git Page로 정적 페이지 Hosting하기Git Page를 통해 USERNAME.g">
+<meta name="twitter:image" content="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/sibal.jpeg">
+  <link rel="canonical" href="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Hexo 블로그 만들기 삽질 일지 - 1 | 777bareman777 Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">777bareman777 Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">켄넬 교육받은 댕댕이</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Hexo 블로그 만들기 삽질 일지 - 1
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-12 15:09:08" itemprop="dateCreated datePublished" datetime="2019-09-12T15:09:08+09:00">2019-09-12</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-09-19 20:25:32" itemprop="dateModified" datetime="2019-09-19T20:25:32+09:00">2019-09-19</time>
+              </span>
+            
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>아는 형한테 github page와 hexo를 통해서 블로그를 만들 수 있다고 이야기를 들었다.<br>티스토리 보다는 간지나게 hexo로 블로그를 관리해보자라는 욕심으로 정보를 찾아봤다.<br>하지만 그 이야기를 들었으면 안됬다.</p>
+<img src="/2019/09/12/HowToCreateBlogUingHexo/sibal.jpeg" title="오열"> 
+
+<p>이제부터 시작이다 나의 hexo 삽질이 ….</p>
+<br>
+
+<h2 id="Git-Page로-정적-페이지-Hosting하기"><a href="#Git-Page로-정적-페이지-Hosting하기" class="headerlink" title="Git Page로 정적 페이지 Hosting하기"></a>Git Page로 정적 페이지 Hosting하기</h2><p>Git Page를 통해 USERNAME.github.io 도메인을 통해 정적 페이지를 호스팅할 수 있고, 자기 자신이 도메인을 가지고 있으면 커스텀 도메인할 수 있다. 이런거 필요 없다. 몰라도 좋다.</p>
+<p>그냥 github에 들어가서 USERNAME.github.io를 생성하면 된다.<br>public 이든 private든 무엇이든 선택해도 좋다.</p>
+<br>
+
+<h2 id="Hexo-시작"><a href="#Hexo-시작" class="headerlink" title="Hexo 시작"></a>Hexo 시작</h2><p>자 이제 우리는 고통의 시간이 조금씩 다가왔다.<br>hexo를 사용하기 전에 필수적으로 설치해야 하는 것들이 있다.</p>
+<ul>
+<li><strong>Node.js</strong></li>
+<li><strong>Git</strong></li>
+</ul>
+<p>위의 두가지만 설치를 하면 된다. 설치 되어 있으면 생략해도 씹가능이다.</p>
+<br>
+
+<h3 id="hexo-cli-설치-블로그-생성"><a href="#hexo-cli-설치-블로그-생성" class="headerlink" title="hexo cli 설치 + 블로그 생성"></a>hexo cli 설치 + 블로그 생성</h3><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install </span>hexo-cli -g</span><br><span class="line">hexo init <span class="keyword">blog</span></span><br><span class="line"><span class="keyword">cd </span><span class="keyword">blog</span></span><br><span class="line"><span class="keyword">npm </span><span class="keyword">install</span></span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h3 id="설정파일-바꾸기"><a href="#설정파일-바꾸기" class="headerlink" title="설정파일 바꾸기"></a>설정파일 바꾸기</h3><p>위와 같은 방식으로 Hexo 프로젝트를 만들 수 있는데, Hexo 프로젝트 안에 _config.yml 이라는 설정파일이 존재한다. 이 설정 파일을 가지고 블로그에 대한 설정을 할 수 있는데, 나중에 테마를 설정하게 되면 테마 폴더에 있는 _config.yml 도 건드려야 한다.<br>설정파일안에 주석도 달려있고, 공식 문서도 존재하고, 다른 블로그에서도 설명이 되있으니 생략한다.</p>
+<p>-&gt; 이 부분이 좀 많이 짜증난다.</p>
+<ul>
+<li>공식 사이트 : <a href="https://hexo.io/docs/" target="_blank" rel="noopener">https://hexo.io/docs/</a></li>
+</ul>
+<p>하지만 그 설정 파일 중에서 필수적으로 바꿔야 하는 것이 있다.<br>블로그 URL을 바꾸는 부분과 Github 정보를 바꾸는 부분이다.</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># blod url</span></span><br><span class="line"><span class="symbol">url:</span> https:<span class="comment">//USERNAME.github.io</span></span><br><span class="line"><span class="symbol">root:</span> /</span><br><span class="line"><span class="symbol">permalink:</span> :year/:month/:day/:title/</span><br><span class="line"><span class="symbol">permalink_defaults:</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># Deployment</span></span><br><span class="line"><span class="symbol">deploy:</span></span><br><span class="line"><span class="symbol">  type:</span> git</span><br><span class="line"><span class="symbol">  repo:</span> https:<span class="comment">//USERNAME@github.com/USERNAME/USERNAME.github.io</span></span><br><span class="line"><span class="symbol">  branch:</span> master</span><br></pre></td></tr></table></figure>
+
+<p>위와 같이 자신의 github 아이디를 USERNAME에 넣어주기만 하면 배포를 할 수 있게된다.</p>
+<br>
+
+<h3 id="로컬에서-테스트하기"><a href="#로컬에서-테스트하기" class="headerlink" title="로컬에서 테스트하기"></a>로컬에서 테스트하기</h3><p>설정을 완료하면 아래의 명령어를 통해 로컬에서 서버를 구동할 수 있다.</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo <span class="keyword">server</span></span><br></pre></td></tr></table></figure>
+
+<p>서버가 구동이 되면 브라우저에서 <a href="https://localhost:4000" target="_blank" rel="noopener">https://localhost:4000</a> 을 통해 hexo로 만든 블로그에 접속할 수 있다.</p>
+<br>
+
+<h2 id="Github에-배포하기"><a href="#Github에-배포하기" class="headerlink" title="Github에 배포하기"></a>Github에 배포하기</h2><p>로컬에서 정상적으로 블로그가 동작한다는 것을 확인 한후에 github을 통해 배포가 가능하다.</p>
+<p>먼저 hexo 설정을 가지고 리소스를 생성하고 배포하면된다.</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>생성과 배포를 동시에 할 수도 있다.</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span> --deploy</span><br></pre></td></tr></table></figure>
+
+<p>하지만 배포를 하기 전에 hexo에서 github에 push 할 수 있도록 플러그인을 다운로드 받아야한다.</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm instgall hexo-deployer-git <span class="comment">--save</span></span><br></pre></td></tr></table></figure>
+
+<p>플러그인을 받은 후에 _config.yml에 플러그인 설정을 해주기만 하면된다.</p>
+<p>-&gt; 설정을 하지 않아도 동작하기는 한다.</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">plugins:</span></span><br><span class="line">    - hexo-deployer-git</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="기타-등등"><a href="#기타-등등" class="headerlink" title="기타 등등"></a>기타 등등</h2><p>포스팅을 하고, 이미지를 넣고, 하는 방법은 다른 블로그에도 많으니 다른 곳을 참고하길 바란다.<br>다음 글에서는 hexo 프로젝트를 백업하고, 테마를 설정하고, 테마를 백업하는 방법에 대해 설명하고자 한다.</p>
+<p>hexo blog를 백업하는 부분에서 많은 시간이 소모가 된다. github을 자주 사용하지 않아서 이 부분에서 깊은 빡침을 느꼈다.</p>
+<p>다음 포스팅에서 보자.</p>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h2 id="다음-포스팅"><a href="#다음-포스팅" class="headerlink" title="다음 포스팅"></a>다음 포스팅</h2><hr>
+<p><a href="../HowToCreateBlogUingHexo2">Hexo 블로그 만들기 삽질 일기 - 2</a></p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/hexo/" rel="tag"># hexo</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/12/HowToCreateBlogUingHexo2/" rel="prev" title="Hexo 블로그 만들기 삽질 일지 - 2">
+                  Hexo 블로그 만들기 삽질 일지 - 2 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git-Page로-정적-페이지-Hosting하기"><span class="nav-number">1.</span> <span class="nav-text">Git Page로 정적 페이지 Hosting하기</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo-시작"><span class="nav-number">2.</span> <span class="nav-text">Hexo 시작</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hexo-cli-설치-블로그-생성"><span class="nav-number">2.1.</span> <span class="nav-text">hexo cli 설치 + 블로그 생성</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#설정파일-바꾸기"><span class="nav-number">2.2.</span> <span class="nav-text">설정파일 바꾸기</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#로컬에서-테스트하기"><span class="nav-number">2.3.</span> <span class="nav-text">로컬에서 테스트하기</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Github에-배포하기"><span class="nav-number">3.</span> <span class="nav-text">Github에 배포하기</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#기타-등등"><span class="nav-number">4.</span> <span class="nav-text">기타 등등</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#다음-포스팅"><span class="nav-number">5.</span> <span class="nav-text">다음 포스팅</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">777bareman777</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span>
+        
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">777bareman777</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
