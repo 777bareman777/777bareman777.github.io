@@ -225,6 +225,146 @@
   
   
   <div class="post-block home">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/24/UnderstandC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+            
+            <a href="/2019/09/24/UnderstandC/" class="post-title-link" itemprop="url">C 언어 포인터 이해하기</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-24 10:42:55" itemprop="dateCreated datePublished" datetime="2019-09-24T10:42:55+09:00">2019-09-24</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-09-25 00:57:09" itemprop="dateModified" datetime="2019-09-25T00:57:09+09:00">2019-09-25</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-language/" itemprop="url" rel="index"><span itemprop="name">C language</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2019/09/24/UnderstandC/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/24/UnderstandC/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.</p>
+<br>
+
+<h2 id="포인터는-무엇일까"><a href="#포인터는-무엇일까" class="headerlink" title="포인터는 무엇일까?"></a>포인터는 무엇일까?</h2><p>C 언어에서 포인터는 무엇일까요? 개념 자체는 단순해요. 그냥 <strong>메모리의 주소 값을 가질 수 있는 녀석</strong>이죠.</p>
+<br>
+
+<h3 id="사용하는-이유는"><a href="#사용하는-이유는" class="headerlink" title="사용하는 이유는?"></a>사용하는 이유는?</h3><p>이러한 포인터를 사용하는 무엇일까요?<br>함수를 사용하지 않고, 동적 할당도 사용하지 않고, 모든 코드를 진입점 함수에 해당하는 main()에 모든 코드를 집어 넣으면 포인터를 사용할 필요가 없을지도 몰라요.</p>
+<p>하지만 우리는 그렇게 코딩을 하지 않고, 유지 보수를 용이하게 하기 위해서 기능별로 소스 파일 만들고, 모듈화 하기 위해서 진입점 함수의 부분을 간략화 하는 등 일을 하기 때문에 포인터 라는 것이 필요해요.</p>
+<p>포인터라는 문법이 없는 자바, C# 등 에서는 가비지 컬렉션이라고 불리는 녀석들이 알아서 메모리를 관리하기 때문에 필요가 없지만, C/C++ 에서는 메모리 관리를 개발자가 직접하기 때문에 포인터라는 문법이 존재하죠.</p>
+<br>
+
+<h2 id="포인터-문법"><a href="#포인터-문법" class="headerlink" title="포인터 문법"></a>포인터 문법</h2><p>포인터는 <strong>“*”</strong> 별표라는 기호를 이용해서 사용해요.</p>
+<p>예를 들어서, char a*, int *b, float *c 라고 하면, 순서대로 char 형 포인터로 선언된 a, int형 포인터로 선언된 b, float형 포인터로 선언된 c로 볼 수 있어요.</p>
+<p>이렇게 단일 포인터로 사용될 경우에는 포인터가 어떤 식으로 사용되는지 쉽게 알 수 있지만, 포인터를 이중,삼중으로 사용하게 되면, 이 포인터가 무엇을 의미하는지 알기 쉽지 않아요. 그거에 대해서 차근차근 알아볼 거에요.</p>
+<p>그리고 <strong>“*”</strong> 별표는 포인터 변수라는 것을 의미하는 것 이외에도, 곱셈 기호로 사용하기도 하고, 역참조해서 해당 주소의 값에 접근할 때도 사용해요.</p>
+<p>또한 모든 포인터는 대상체의 크기만큼 이동을 하게 되는데 이게 무슨 의미일까요? 한번 코드를 통해 알아봅시다.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">100</span>;</span><br><span class="line">	<span class="keyword">int</span>* p=&amp;i;</span><br><span class="line">	*p=<span class="number">200</span>;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d\n"</span>,i);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(i): %lu\n"</span>,<span class="keyword">sizeof</span>(i));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(int): %lu\n"</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(p): %lu\n"</span>,<span class="keyword">sizeof</span>(p));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(int *): %lu\n"</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>*));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(*p): %lu\n"</span>,<span class="keyword">sizeof</span>(*p));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"p=%p\n"</span>,p);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"p+1=%p\n"</span>,p+<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote><p>7 line-&gt; 200<br>8 line-&gt; sizeof(i): 4<br>9 line-&gt; sizeof(int): 4<br>10 line-&gt; sizeof(p): 8<br>11 line-&gt; sizeof(int <em>): 8<br>12 line-&gt; sizeof(</em>p): 4<br>13 line-&gt; p=0x7ffeea9fa848<br>14 line-&gt; p+1=0x7ffeea9fa84c</p>
+</blockquote>
+
+<p>맨 마지막의 메모리 주소 값은 환경에 따라 다를 수 있습니다.</p>
+<p>변수 i를 100로 초기화를 했지만, 포인터 변수 p에 i의 주소 값을 집어 넣고, 포인터 변수 p를 역참조해서 200라는 값을 대입을 했어요.<br>그래서 변수 i의 값이 100에서 200로 변한 것이죠.</p>
+<img src="/2019/09/24/UnderstandC/1.png">
+
+<p>그리고 int 형의 크기, int 형 변수의 크기, int 포인터 형의 크기, int 포인터 형 변수의 크기, int 포인터 형 변수의 역 참조의 크기에 대해 알아봤어요.</p>
+<p>int 형 같은 경우에는 IA-64 계열에서는 4바이트의 크기를 가지고 있어요. cpu의 종류에 따라 이 크기는 달라질 수도 있어요.</p>
+<p>int 포인터 형 같은 경우에는 IA-64 계열에서는 8바이트, x86 계열에서는 4바이트를 가지고 있어요. 그리고 포인터 같은 경우에는 int 형이든, float 형이든 크기가 동일해요. 그 이유는 메모리 주소를 나타내기 때문이죠. 그렇다고 하더라도 int 포인터 형과 float 포인터 형을 섞어서 써도 된다는 말은 아니에요. 섞어서 사용하면 안됩니다.</p>
+<p>제 cpu는 IA-64 계열이라서 int 형의 크기가 4바이트, int 포인터 형의 크기가 8바이트, int 포인터 형의 역참조 크기가 4바이트가 나옵니다.</p>
+<p>int 포인터 형의 역참조 크기가 4바이트가 나오는 이유는 int 포인터 형이 가리키고 있는 녀석이 int 형이기 때문입니다. 그래서 4바이트 크기가 나오는 것입니다.</p>
+<p>char 포인터 형의 역참조 크기는 몇 바이트가 나올까요? char 포인터 형의 크기는 IA-64 계열에서 int 포인터 형의 크기처럼 8바이트가 나오지만, 역참조의 크기는 4바이트가 아니라 1바티으가 나옵니다. 그 이유는 char 포인터 형의 역참조는 char 형을 가리키기 때문이죠.</p>
+<br>
+
+<p>다음 포스팅은 포인터와 배열의 관계에 대한 것입니다.</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+        <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block home">
     <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/20/UnderstandPE6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1643,7 +1783,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-19 22:10:09" itemprop="dateModified" datetime="2019-09-19T22:10:09+09:00">2019-09-19</time>
+                <time title="Modified: 2019-09-24 09:14:00" itemprop="dateModified" datetime="2019-09-24T09:14:00+09:00">2019-09-24</time>
               </span>
             
           
@@ -1933,184 +2073,12 @@
   </article>
 
     
-        <article itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block home">
-    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="777bareman777">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="777bareman777 Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-            
-            <a href="/2019/09/12/HowToCreateBlogUingHexo/" class="post-title-link" itemprop="url">Hexo 블로그 만들기 삽질 일지 - 1</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-09-12 15:09:08" itemprop="dateCreated datePublished" datetime="2019-09-12T15:09:08+09:00">2019-09-12</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-19 22:07:56" itemprop="dateModified" datetime="2019-09-19T22:07:56+09:00">2019-09-19</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-        
-      
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2019/09/12/HowToCreateBlogUingHexo/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/12/HowToCreateBlogUingHexo/" itemprop="commentCount"></span></a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>아는 형한테 github page와 hexo를 통해서 블로그를 만들 수 있다고 이야기를 들었다.<br>티스토리 보다는 간지나게 hexo로 블로그를 관리해보자라는 욕심으로 정보를 찾아봤다.<br>하지만 그 이야기를 들었으면 안됬다.</p>
-<img src="/2019/09/12/HowToCreateBlogUingHexo/sibal.jpeg" title="오열"> 
-
-<p>이제부터 시작이다 나의 hexo 삽질이 ….</p>
-<br>
-
-<h2 id="Git-Page로-정적-페이지-Hosting하기"><a href="#Git-Page로-정적-페이지-Hosting하기" class="headerlink" title="Git Page로 정적 페이지 Hosting하기"></a>Git Page로 정적 페이지 Hosting하기</h2><p>Git Page를 통해 USERNAME.github.io 도메인을 통해 정적 페이지를 호스팅할 수 있고, 자기 자신이 도메인을 가지고 있으면 커스텀 도메인할 수 있다. 이런거 필요 없다. 몰라도 좋다.</p>
-<p>그냥 github에 들어가서 USERNAME.github.io를 생성하면 된다.<br>public 이든 private든 무엇이든 선택해도 좋다.</p>
-<br>
-
-<h2 id="Hexo-시작"><a href="#Hexo-시작" class="headerlink" title="Hexo 시작"></a>Hexo 시작</h2><p>자 이제 우리는 고통의 시간이 조금씩 다가왔다.<br>hexo를 사용하기 전에 필수적으로 설치해야 하는 것들이 있다.</p>
-<ul>
-<li><strong>Node.js</strong></li>
-<li><strong>Git</strong></li>
-</ul>
-<p>위의 두가지만 설치를 하면 된다. 설치 되어 있으면 생략해도 씹가능이다.</p>
-<br>
-
-<h3 id="hexo-cli-설치-블로그-생성"><a href="#hexo-cli-설치-블로그-생성" class="headerlink" title="hexo cli 설치 + 블로그 생성"></a>hexo cli 설치 + 블로그 생성</h3><figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install </span>hexo-cli -g</span><br><span class="line">hexo init <span class="keyword">blog</span></span><br><span class="line"><span class="keyword">cd </span><span class="keyword">blog</span></span><br><span class="line"><span class="keyword">npm </span><span class="keyword">install</span></span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h3 id="설정파일-바꾸기"><a href="#설정파일-바꾸기" class="headerlink" title="설정파일 바꾸기"></a>설정파일 바꾸기</h3><p>위와 같은 방식으로 Hexo 프로젝트를 만들 수 있는데, Hexo 프로젝트 안에 _config.yml 이라는 설정파일이 존재한다. 이 설정 파일을 가지고 블로그에 대한 설정을 할 수 있는데, 나중에 테마를 설정하게 되면 테마 폴더에 있는 _config.yml 도 건드려야 한다.<br>설정파일안에 주석도 달려있고, 공식 문서도 존재하고, 다른 블로그에서도 설명이 되있으니 생략한다.</p>
-<p>-&gt; 이 부분이 좀 많이 짜증난다.</p>
-<ul>
-<li>공식 사이트 : <a href="https://hexo.io/docs/" target="_blank" rel="noopener">https://hexo.io/docs/</a></li>
-</ul>
-<p>하지만 그 설정 파일 중에서 필수적으로 바꿔야 하는 것이 있다.<br>블로그 URL을 바꾸는 부분과 Github 정보를 바꾸는 부분이다.</p>
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># blod url</span></span><br><span class="line"><span class="symbol">url:</span> https:<span class="comment">//USERNAME.github.io</span></span><br><span class="line"><span class="symbol">root:</span> /</span><br><span class="line"><span class="symbol">permalink:</span> :year/:month/:day/:title/</span><br><span class="line"><span class="symbol">permalink_defaults:</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># Deployment</span></span><br><span class="line"><span class="symbol">deploy:</span></span><br><span class="line"><span class="symbol">  type:</span> git</span><br><span class="line"><span class="symbol">  repo:</span> https:<span class="comment">//USERNAME@github.com/USERNAME/USERNAME.github.io</span></span><br><span class="line"><span class="symbol">  branch:</span> master</span><br></pre></td></tr></table></figure>
-
-<p>위와 같이 자신의 github 아이디를 USERNAME에 넣어주기만 하면 배포를 할 수 있게된다.</p>
-<br>
-
-<h3 id="로컬에서-테스트하기"><a href="#로컬에서-테스트하기" class="headerlink" title="로컬에서 테스트하기"></a>로컬에서 테스트하기</h3><p>설정을 완료하면 아래의 명령어를 통해 로컬에서 서버를 구동할 수 있다.</p>
-<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo <span class="keyword">server</span></span><br></pre></td></tr></table></figure>
-
-<p>서버가 구동이 되면 브라우저에서 <a href="https://localhost:4000" target="_blank" rel="noopener">https://localhost:4000</a> 을 통해 hexo로 만든 블로그에 접속할 수 있다.</p>
-<br>
-
-<h2 id="Github에-배포하기"><a href="#Github에-배포하기" class="headerlink" title="Github에 배포하기"></a>Github에 배포하기</h2><p>로컬에서 정상적으로 블로그가 동작한다는 것을 확인 한후에 github을 통해 배포가 가능하다.</p>
-<p>먼저 hexo 설정을 가지고 리소스를 생성하고 배포하면된다.</p>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span></span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>생성과 배포를 동시에 할 수도 있다.</p>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span> --deploy</span><br></pre></td></tr></table></figure>
-
-<p>하지만 배포를 하기 전에 hexo에서 github에 push 할 수 있도록 플러그인을 다운로드 받아야한다.</p>
-<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm instgall hexo-deployer-git <span class="comment">--save</span></span><br></pre></td></tr></table></figure>
-
-<p>플러그인을 받은 후에 _config.yml에 플러그인 설정을 해주기만 하면된다.</p>
-<p>-&gt; 설정을 하지 않아도 동작하기는 한다.</p>
-<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">plugins:</span></span><br><span class="line">    - hexo-deployer-git</span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h2 id="기타-등등"><a href="#기타-등등" class="headerlink" title="기타 등등"></a>기타 등등</h2><p>포스팅을 하고, 이미지를 넣고, 하는 방법은 다른 블로그에도 많으니 다른 곳을 참고하길 바란다.<br>다음 글에서는 hexo 프로젝트를 백업하고, 테마를 설정하고, 테마를 백업하는 방법에 대해 설명하고자 한다.</p>
-<p>hexo blog를 백업하는 부분에서 많은 시간이 소모가 된다. github을 자주 사용하지 않아서 이 부분에서 깊은 빡침을 느꼈다.</p>
-<p>다음 포스팅에서 보자.</p>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-<h2 id="다음-포스팅"><a href="#다음-포스팅" class="headerlink" title="다음 포스팅"></a>다음 포스팅</h2><hr>
-<p><a href="../HowToCreateBlogUingHexo2">Hexo 블로그 만들기 삽질 일기 - 2</a></p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </div>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
 
 
           </div>
@@ -2154,7 +2122,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2180,7 +2148,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>

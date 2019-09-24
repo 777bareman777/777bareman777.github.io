@@ -55,19 +55,21 @@
   };
 </script>
 
-  <meta name="description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 맨 앞부분에 해당하는 DOS 스텁에 대한 내용을 알아볼 거에요.   DOS 스텁의 시작PE 파일은 몇십 바이트의 MS-DOS 스텁으로 시작 하고, MS-DOS 스텁은 예전의 MS-DOS 시절때의 MZ 포맷으로 PE 포맷에서는 큰 의미가 없다고 해요. MS-D">
-<meta name="keywords" content="Windows">
+  <meta name="description" content="강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.   포인터는 무엇일까?C 언어에서 포인터는 무엇일까요? 개념 자체는 단순해요. 그냥 메모리의 주소 값을 가질 수 있는 녀석이죠.   사용하는 이유는?이러한 포인터를 사용하는 무엇일까요?함수를 사용하지 않고, 동적 할당도 사용하지 않고, 모든 코드를 진입점 함수에 해당하는 main()에 모든 코드를">
+<meta name="keywords" content="C language">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PE 구조 이해하기 - IMAGE_DOS_HEADER 구조">
-<meta property="og:url" content="http://777bareman777.github.io/2019/09/17/UnderstandPE/index.html">
+<meta property="og:title" content="C 언어 포인터 이해하기">
+<meta property="og:url" content="http://777bareman777.github.io/2019/09/24/UnderstandC/index.html">
 <meta property="og:site_name" content="777bareman777 Blog">
-<meta property="og:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 맨 앞부분에 해당하는 DOS 스텁에 대한 내용을 알아볼 거에요.   DOS 스텁의 시작PE 파일은 몇십 바이트의 MS-DOS 스텁으로 시작 하고, MS-DOS 스텁은 예전의 MS-DOS 시절때의 MZ 포맷으로 PE 포맷에서는 큰 의미가 없다고 해요. MS-D">
+<meta property="og:description" content="강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.   포인터는 무엇일까?C 언어에서 포인터는 무엇일까요? 개념 자체는 단순해요. 그냥 메모리의 주소 값을 가질 수 있는 녀석이죠.   사용하는 이유는?이러한 포인터를 사용하는 무엇일까요?함수를 사용하지 않고, 동적 할당도 사용하지 않고, 모든 코드를 진입점 함수에 해당하는 main()에 모든 코드를">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-09-24T00:13:30.347Z">
+<meta property="og:image" content="http://777bareman777.github.io/2019/09/24/UnderstandC/1.png">
+<meta property="og:updated_time" content="2019-09-24T15:57:09.324Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PE 구조 이해하기 - IMAGE_DOS_HEADER 구조">
-<meta name="twitter:description" content="windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요. PE파일의 맨 앞부분에 해당하는 DOS 스텁에 대한 내용을 알아볼 거에요.   DOS 스텁의 시작PE 파일은 몇십 바이트의 MS-DOS 스텁으로 시작 하고, MS-DOS 스텁은 예전의 MS-DOS 시절때의 MZ 포맷으로 PE 포맷에서는 큰 의미가 없다고 해요. MS-D">
-  <link rel="canonical" href="http://777bareman777.github.io/2019/09/17/UnderstandPE/">
+<meta name="twitter:title" content="C 언어 포인터 이해하기">
+<meta name="twitter:description" content="강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.   포인터는 무엇일까?C 언어에서 포인터는 무엇일까요? 개념 자체는 단순해요. 그냥 메모리의 주소 값을 가질 수 있는 녀석이죠.   사용하는 이유는?이러한 포인터를 사용하는 무엇일까요?함수를 사용하지 않고, 동적 할당도 사용하지 않고, 모든 코드를 진입점 함수에 해당하는 main()에 모든 코드를">
+<meta name="twitter:image" content="http://777bareman777.github.io/2019/09/24/UnderstandC/1.png">
+  <link rel="canonical" href="http://777bareman777.github.io/2019/09/24/UnderstandC/">
 
 
 <script id="page-configurations">
@@ -81,7 +83,7 @@
   };
 </script>
 
-  <title>PE 구조 이해하기 - IMAGE_DOS_HEADER 구조 | 777bareman777 Blog</title>
+  <title>C 언어 포인터 이해하기 | 777bareman777 Blog</title>
   
 
 
@@ -231,7 +233,7 @@
   
   
   <div class="post-block post">
-    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/17/UnderstandPE/">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/24/UnderstandC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="777bareman777">
@@ -243,7 +245,7 @@
       <meta itemprop="name" content="777bareman777 Blog">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">PE 구조 이해하기 - IMAGE_DOS_HEADER 구조
+        <h1 class="post-title" itemprop="name headline">C 언어 포인터 이해하기
 
           
         </h1>
@@ -259,7 +261,7 @@
                 
               
 
-              <time title="Created: 2019-09-17 16:09:44" itemprop="dateCreated datePublished" datetime="2019-09-17T16:09:44+09:00">2019-09-17</time>
+              <time title="Created: 2019-09-24 10:42:55" itemprop="dateCreated datePublished" datetime="2019-09-24T10:42:55+09:00">2019-09-24</time>
             </span>
           
             
@@ -270,7 +272,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-24 09:13:30" itemprop="dateModified" datetime="2019-09-24T09:13:30+09:00">2019-09-24</time>
+                <time title="Modified: 2019-09-25 00:57:09" itemprop="dateModified" datetime="2019-09-25T00:57:09+09:00">2019-09-25</time>
               </span>
             
           
@@ -280,7 +282,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PE-file/" itemprop="url" rel="index"><span itemprop="name">PE file</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-language/" itemprop="url" rel="index"><span itemprop="name">C language</span></a></span>
 
                 
                 
@@ -299,7 +301,7 @@
       
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2019/09/17/UnderstandPE/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/17/UnderstandPE/" itemprop="commentCount"></span></a>
+    <a title="disqus" href="/2019/09/24/UnderstandC/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/24/UnderstandC/" itemprop="commentCount"></span></a>
   </span>
   
   
@@ -313,33 +315,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>windows 시스템 실행파일의 구조와 원리 책 내용을 요약 및 정리 하는 포스팅이에요.</p>
-<p>PE파일의 맨 앞부분에 해당하는 <strong>DOS 스텁</strong>에 대한 내용을 알아볼 거에요.</p>
+        <p>강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.</p>
 <br>
 
-<h2 id="DOS-스텁의-시작"><a href="#DOS-스텁의-시작" class="headerlink" title="DOS 스텁의 시작"></a>DOS 스텁의 시작</h2><p>PE 파일은 몇십 바이트의 MS-DOS 스텁으로 시작 하고, MS-DOS 스텁은 예전의 MS-DOS 시절때의 MZ 포맷으로 PE 포맷에서는 큰 의미가 없다고 해요.</p>
-<p>MS-DOS 스텁은 PE 파일을 도스 환경에서 실행 시킬 때 “This program cannot be run in DOS mode” 라는 문장을 출력하기 위한 조그마한 16비트 도스용 응용 프로그램에 불과해요.<br>그리고 DOS 스텁은 40바이트의 IMAGE_DOS_HEADER 구조체와 해당 프로그램 코드로 이루어져 있어요. </p>
+<h2 id="포인터는-무엇일까"><a href="#포인터는-무엇일까" class="headerlink" title="포인터는 무엇일까?"></a>포인터는 무엇일까?</h2><p>C 언어에서 포인터는 무엇일까요? 개념 자체는 단순해요. 그냥 <strong>메모리의 주소 값을 가질 수 있는 녀석</strong>이죠.</p>
 <br>
 
-<h3 id="IMAGE-DOS-HEADER-구조체"><a href="#IMAGE-DOS-HEADER-구조체" class="headerlink" title="IMAGE_DOS_HEADER 구조체"></a>IMAGE_DOS_HEADER 구조체</h3><p>IMAGE_DOS_HEADER 구조체는 “WinNT.h” 헤더 파일에 정의되어 있다고 해요.</p>
-<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">typedef struct _IMAGE_DOS_HEADER <span class="regexp">//</span> DOS .EXE header</span><br><span class="line">&#123;</span><br><span class="line">    WORD e_magic;       <span class="regexp">//</span> Magic number</span><br><span class="line">    WORD e_cblp;        <span class="regexp">//</span> Byte on last page of file</span><br><span class="line">    WORD e_cp;          <span class="regexp">//</span> Pages <span class="keyword">in</span> file</span><br><span class="line">    WORD e_crlc;        <span class="regexp">//</span> Relocations</span><br><span class="line">    WORD e_cparhdr;     <span class="regexp">//</span> Size of header <span class="keyword">in</span> paragraphs</span><br><span class="line">    WORD e_minalloc;    <span class="regexp">//</span> Minimum extra paragraphs needed</span><br><span class="line">    WORD e_maxalloc;    <span class="regexp">//</span> Maximum extra paragraphs needed</span><br><span class="line">    WORD e_ss;          <span class="regexp">//</span> Initial (relative) SS value</span><br><span class="line">    WORD e_sp;          <span class="regexp">//</span> Checksum</span><br><span class="line">    WORD e_ip;          <span class="regexp">//</span> Initital IP value</span><br><span class="line">    WORD e_cs;          <span class="regexp">//</span> Initial (relative) CS value</span><br><span class="line">    WORD e_lfarlc;      <span class="regexp">//</span> File address of relocation table</span><br><span class="line">    WORD e_ovno;        <span class="regexp">//</span> Overlay number</span><br><span class="line">    WORD e_res[<span class="number">4</span>];      <span class="regexp">//</span> Reserved words</span><br><span class="line">    WORD e_oemid;       <span class="regexp">//</span> OEM identifier (<span class="keyword">for</span> e_oeminfo)</span><br><span class="line">    WORD e_oeminfo;     <span class="regexp">//</span> OEM information; e_oemid specific</span><br><span class="line">    WORD e_res2[<span class="number">10</span>];    <span class="regexp">//</span> Reserved words</span><br><span class="line">    LONG e_lfanew;      <span class="regexp">//</span> File address of new exe header</span><br><span class="line">&#125; IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;</span><br></pre></td></tr></table></figure>
-
-<p>IMAGE_DOS_HEADER 구조체는 64바이트로 구성되어 있어요.<br>PE 파일에서 0x0000003F 까지가 IMAGE_DOS_HEADER 구조체에요.<br>이 구조체에서 실제로 쓸모가 있는 것은 <strong>첫 번쨰 필드인 e_magic과 마지막 필드인 e_lfanew</strong> 이에요. 그 이외에 나머지는 사용되지 않아요.</p>
+<h3 id="사용하는-이유는"><a href="#사용하는-이유는" class="headerlink" title="사용하는 이유는?"></a>사용하는 이유는?</h3><p>이러한 포인터를 사용하는 무엇일까요?<br>함수를 사용하지 않고, 동적 할당도 사용하지 않고, 모든 코드를 진입점 함수에 해당하는 main()에 모든 코드를 집어 넣으면 포인터를 사용할 필요가 없을지도 몰라요.</p>
+<p>하지만 우리는 그렇게 코딩을 하지 않고, 유지 보수를 용이하게 하기 위해서 기능별로 소스 파일 만들고, 모듈화 하기 위해서 진입점 함수의 부분을 간략화 하는 등 일을 하기 때문에 포인터 라는 것이 필요해요.</p>
+<p>포인터라는 문법이 없는 자바, C# 등 에서는 가비지 컬렉션이라고 불리는 녀석들이 알아서 메모리를 관리하기 때문에 필요가 없지만, C/C++ 에서는 메모리 관리를 개발자가 직접하기 때문에 포인터라는 문법이 존재하죠.</p>
 <br>
 
-<h2 id="첫-번째-필드인-e-magic"><a href="#첫-번째-필드인-e-magic" class="headerlink" title="첫 번째 필드인 e_magic"></a>첫 번째 필드인 e_magic</h2><p>모든 PE 파일은 IMAGE_DOS_HEADER로 시작해요.<br>이때 e_magic은 <strong>ASCII “MZ”</strong> 로 고정되어 있어요. 위 구조체에서는 e_magic WORD 형으로 되어 있는데, “MZ”을 워드로 읽게 되면 <strong>0x5A4D</strong>가 되요.</p>
-<p>여기서 0x5A=’Z’, 0x4D=’M’ 에 해당해요.<br>인텔 cpu 같은 경우에는 리틀 엔디번 방식으로 메모리를 정렬하기 때문에 0x5A4D로 값을 저장하게 되요.</p>
-<p>이러한 “MZ”도 “WinNT.h” 헤더 파일에 매크로로 정의되어 있어요.</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IMAGE_DOS_SIGNATURE 0x5A4D <span class="comment">// MZ</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="포인터-문법"><a href="#포인터-문법" class="headerlink" title="포인터 문법"></a>포인터 문법</h2><p>포인터는 <strong>“*”</strong> 별표라는 기호를 이용해서 사용해요.</p>
+<p>예를 들어서, char a*, int *b, float *c 라고 하면, 순서대로 char 형 포인터로 선언된 a, int형 포인터로 선언된 b, float형 포인터로 선언된 c로 볼 수 있어요.</p>
+<p>이렇게 단일 포인터로 사용될 경우에는 포인터가 어떤 식으로 사용되는지 쉽게 알 수 있지만, 포인터를 이중,삼중으로 사용하게 되면, 이 포인터가 무엇을 의미하는지 알기 쉽지 않아요. 그거에 대해서 차근차근 알아볼 거에요.</p>
+<p>그리고 <strong>“*”</strong> 별표는 포인터 변수라는 것을 의미하는 것 이외에도, 곱셈 기호로 사용하기도 하고, 역참조해서 해당 주소의 값에 접근할 때도 사용해요.</p>
+<p>또한 모든 포인터는 대상체의 크기만큼 이동을 하게 되는데 이게 무슨 의미일까요? 한번 코드를 통해 알아봅시다.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i=<span class="number">100</span>;</span><br><span class="line">	<span class="keyword">int</span>* p=&amp;i;</span><br><span class="line">	*p=<span class="number">200</span>;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"%d\n"</span>,i);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(i): %lu\n"</span>,<span class="keyword">sizeof</span>(i));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(int): %lu\n"</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(p): %lu\n"</span>,<span class="keyword">sizeof</span>(p));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(int *): %lu\n"</span>,<span class="keyword">sizeof</span>(<span class="keyword">int</span>*));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(*p): %lu\n"</span>,<span class="keyword">sizeof</span>(*p));</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"p=%p\n"</span>,p);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"p+1=%p\n"</span>,p+<span class="number">1</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote><p>7 line-&gt; 200<br>8 line-&gt; sizeof(i): 4<br>9 line-&gt; sizeof(int): 4<br>10 line-&gt; sizeof(p): 8<br>11 line-&gt; sizeof(int <em>): 8<br>12 line-&gt; sizeof(</em>p): 4<br>13 line-&gt; p=0x7ffeea9fa848<br>14 line-&gt; p+1=0x7ffeea9fa84c</p>
+</blockquote>
 
+<p>맨 마지막의 메모리 주소 값은 환경에 따라 다를 수 있습니다.</p>
+<p>변수 i를 100로 초기화를 했지만, 포인터 변수 p에 i의 주소 값을 집어 넣고, 포인터 변수 p를 역참조해서 200라는 값을 대입을 했어요.<br>그래서 변수 i의 값이 100에서 200로 변한 것이죠.</p>
+<img src="/2019/09/24/UnderstandC/1.png">
+
+<p>그리고 int 형의 크기, int 형 변수의 크기, int 포인터 형의 크기, int 포인터 형 변수의 크기, int 포인터 형 변수의 역 참조의 크기에 대해 알아봤어요.</p>
+<p>int 형 같은 경우에는 IA-64 계열에서는 4바이트의 크기를 가지고 있어요. cpu의 종류에 따라 이 크기는 달라질 수도 있어요.</p>
+<p>int 포인터 형 같은 경우에는 IA-64 계열에서는 8바이트, x86 계열에서는 4바이트를 가지고 있어요. 그리고 포인터 같은 경우에는 int 형이든, float 형이든 크기가 동일해요. 그 이유는 메모리 주소를 나타내기 때문이죠. 그렇다고 하더라도 int 포인터 형과 float 포인터 형을 섞어서 써도 된다는 말은 아니에요. 섞어서 사용하면 안됩니다.</p>
+<p>제 cpu는 IA-64 계열이라서 int 형의 크기가 4바이트, int 포인터 형의 크기가 8바이트, int 포인터 형의 역참조 크기가 4바이트가 나옵니다.</p>
+<p>int 포인터 형의 역참조 크기가 4바이트가 나오는 이유는 int 포인터 형이 가리키고 있는 녀석이 int 형이기 때문입니다. 그래서 4바이트 크기가 나오는 것입니다.</p>
+<p>char 포인터 형의 역참조 크기는 몇 바이트가 나올까요? char 포인터 형의 크기는 IA-64 계열에서 int 포인터 형의 크기처럼 8바이트가 나오지만, 역참조의 크기는 4바이트가 아니라 1바티으가 나옵니다. 그 이유는 char 포인터 형의 역참조는 char 형을 가리키기 때문이죠.</p>
 <br>
 
-<h2 id="마지막-필드인-e-lfanew"><a href="#마지막-필드인-e-lfanew" class="headerlink" title="마지막 필드인 e_lfanew"></a>마지막 필드인 e_lfanew</h2><p>IMAGE_DOS_HEADER 구조체에서 <strong>e_flanew</strong> 필드에는 실제 PE 파일의 시작이라고 할 수 있는 <strong>IMAGE_NT_HEADER 시작 오프셋 값</strong>을 가진다고 해요.</p>
-<p>예를 들어서 DWORD 형으로 정의된 e_flanew의 값이 0x000000F0 이라면, 실제 PE 파일의 시작은 0x000000F0 이고, 여기서 PE 파일의 시그니쳐인 “PE”를 볼 수 있어요.</p>
-<br>
-
-<h2 id="마지막으로…"><a href="#마지막으로…" class="headerlink" title="마지막으로…"></a>마지막으로…</h2><p>IMAGE_DOS_HEADER 와 DOS 스텁은 MS-DOS 시절의 유산물이에요. 우리는 여기서 PE 파일내에서 사용하지 않는 부분이 있다는 것을 알았어요. 앞으로도 PE 파일내에서 사용하지 않는 부분이 존재할거에요. 그리고 이러한 부분들을 이용해서 패커 같은 것을 구현해서 PE 파일의 크기를 줄이고, 리버싱을 하기 어렵게 만들었다고 해요!!</p>
-<p>우리가 <strong>IMAGE_DOS_HEADER에서 e_magic의 값이 0x5A4D</strong> 이어야지 PE 파일이라는 것을 알 수 있다는 사실과 <strong>e_lfanew의 값에 따라서 IMAGE_NT_HEADER의 시작 오프셋 값</strong>을 알 수 있다는 것만 알면 되요.</p>
+<p>다음 포스팅은 포인터와 배열의 관계에 대한 것입니다.</p>
 
     </div>
 
@@ -355,7 +363,7 @@
           
           <div class="post-tags">
             
-              <a href="/tags/Windows/" rel="tag"># Windows</a>
+              <a href="/tags/C-language/" rel="tag"># C language</a>
             
           </div>
         
@@ -365,8 +373,8 @@
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
               
-                <a href="/2019/09/16/HamsterBreddingDiary/" rel="next" title="햄스터 기르기 일지 - 기본편">
-                  <i class="fa fa-chevron-left"></i> 햄스터 기르기 일지 - 기본편
+                <a href="/2019/09/20/UnderstandPE6/" rel="next" title="PE 구조 이해하기 - IMAGE_SECTION_HEADER 구조">
+                  <i class="fa fa-chevron-left"></i> PE 구조 이해하기 - IMAGE_SECTION_HEADER 구조
                 </a>
               
             </div>
@@ -374,10 +382,6 @@
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-              
-                <a href="/2019/09/18/UnderstandPE2/" rel="prev" title="PE 구조 이해하기 - IMAGE_NT_HEADERS 구조">
-                  PE 구조 이해하기 - IMAGE_NT_HEADERS 구조 <i class="fa fa-chevron-right"></i>
-                </a>
               
             </div>
           </div>
@@ -435,7 +439,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#DOS-스텁의-시작"><span class="nav-number">1.</span> <span class="nav-text">DOS 스텁의 시작</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IMAGE-DOS-HEADER-구조체"><span class="nav-number">1.1.</span> <span class="nav-text">IMAGE_DOS_HEADER 구조체</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#첫-번째-필드인-e-magic"><span class="nav-number">2.</span> <span class="nav-text">첫 번째 필드인 e_magic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#마지막-필드인-e-lfanew"><span class="nav-number">3.</span> <span class="nav-text">마지막 필드인 e_lfanew</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#마지막으로…"><span class="nav-number">4.</span> <span class="nav-text">마지막으로…</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#포인터는-무엇일까"><span class="nav-number">1.</span> <span class="nav-text">포인터는 무엇일까?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#사용하는-이유는"><span class="nav-number">1.1.</span> <span class="nav-text">사용하는 이유는?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#포인터-문법"><span class="nav-number">2.</span> <span class="nav-text">포인터 문법</span></a></li></ol></div>
         
       </div>
       <!--/noindex-->
@@ -577,9 +581,9 @@
 </script>
 <script>
   function disqus_config() {
-    this.page.url = "http://777bareman777.github.io/2019/09/17/UnderstandPE/";
-    this.page.identifier = "2019/09/17/UnderstandPE/";
-    this.page.title = 'PE 구조 이해하기 - IMAGE_DOS_HEADER 구조';};
+    this.page.url = "http://777bareman777.github.io/2019/09/24/UnderstandC/";
+    this.page.identifier = "2019/09/24/UnderstandC/";
+    this.page.title = 'C 언어 포인터 이해하기';};
   function loadComments() {
     if (window.DISQUS) {
       DISQUS.reset({
