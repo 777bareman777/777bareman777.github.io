@@ -225,6 +225,234 @@
   
   
   <div class="post-block home">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/28/UnderstandC2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+            
+            <a href="/2019/09/28/UnderstandC2/" class="post-title-link" itemprop="url">C언어 포인터와 배열의 관계 이해하기</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2019-09-28 22:06:02" itemprop="dateCreated datePublished" datetime="2019-09-28T22:06:02+09:00">2019-09-28</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2019-10-04 03:31:38" itemprop="dateModified" datetime="2019-10-04T03:31:38+09:00">2019-10-04</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/C-language/" itemprop="url" rel="index"><span itemprop="name">C language</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2019/09/28/UnderstandC2/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/28/UnderstandC2/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>강의, 책을 보면서 노트화 했던 것을 정리하는 포스팅입니다.</p>
+<br>
+
+<h2 id="포인터-배열-어떤-관계가-있지"><a href="#포인터-배열-어떤-관계가-있지" class="headerlink" title="포인터? 배열? 어떤 관계가 있지?"></a>포인터? 배열? 어떤 관계가 있지?</h2><p>저번시간에 포인터는 메모리 주소 값을 가질 수 있는 녀석이라고 설명했어요.</p>
+<p>그렇다면 배열은 어떤 녀석일까요? 배열은 여러 개의 데이터들을 한꺼번에 관리할 수 있는 녀석이에요.</p>
+<p>배열은 어떻게 여러 개의 데이터들을 한꺼번에 관리할 수 있는 걸까요?</p>
+<p>그리고 단일 포인터에 일차원 배열을 대입하면 포인터를 배열처럼 사용할 수 있어요.<br>어떻게 그렇게 할 수 있는 걸까요?</p>
+<p>아래의 코드를 보면, 배열과 포인터는 가리키는 대상체가 다르다는 것을 알 수가 있는데 말이죠.</p>
+<figure class="highlight ocaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">int</span> a[<span class="number">4</span>]=&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125; =&gt; <span class="built_in">array</span> <span class="keyword">of</span> <span class="number">4</span> <span class="built_in">int</span></span><br><span class="line"><span class="built_in">int</span> *p=a; =&gt; pointer <span class="keyword">to</span> <span class="built_in">int</span></span><br><span class="line"></span><br><span class="line">sizeof(p) =&gt; <span class="number">8</span></span><br><span class="line">sizeof( <span class="built_in">int</span> * ) =&gt; <span class="number">8</span></span><br><span class="line"></span><br><span class="line">sizeof(a) =&gt; <span class="number">16</span></span><br><span class="line">sizeof(<span class="built_in">int</span> [<span class="number">4</span>]) =&gt; <span class="number">16</span></span><br></pre></td></tr></table></figure>
+
+<p>배열이 여러 개의 데이터들을 한꺼번에 관리할 수 있는 이유는 배열의 크기만큼 메모리에 공간을 할당하고, 배열 이름 그 자체가 첫번째 데이터 시작지점의 주소 값을 가지고 있기 때문이에요.</p>
+<p>단일 포인터에 일차원 배열을 대입하면 포인터를 배열처럼 사용할 수 있는 이유는 형 변환을 통해서 포인터에서 배열로 대입되기 때문이에요.</p>
+<p>이런 것을 가능하게 하는 기법이 Decay라고 불려요.<br>Decay 이란 “배열의 이름은 일반적으로 배열의 첫번째 원소의 주소로 해석한다.” 에요.</p>
+<p>Decay 문법에서도 예외 조건이 있다고 해요.<br>sizeof() 연산자에서는 대상체의 타입을 구해오는 것이 핵심이고, &amp; 연산자에서는 주소 값을 구하기 때문에 이 두가지는 예외적으로 취급해요.</p>
+<p>그래서 sizeof(p)와 sizeof(a)의 크기가 다르고, p=a 와 p=&amp;a[0] 는 똑같은 의미를 가진다는 것을 알 수가 있어요. 그렇다면 p=&amp;a는 어떤 의미를 가지고 있을까요?</p>
+<p>아래의 코드를 보면서, 좀 더 자세히 알아봅시다.</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	int a[<span class="number">4</span>]=&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>&#125;;</span><br><span class="line">	int (*p)[<span class="number">4</span>]=&amp;a;</span><br><span class="line"></span><br><span class="line">	(*p)[<span class="number">3</span>]=<span class="number">10</span>;  </span><br><span class="line"></span><br><span class="line">	printf(<span class="string">"p=%p<span class="subst">\n</span>"</span>,p);</span><br><span class="line">	printf(<span class="string">"p+1=%p<span class="subst">\n</span>"</span>,p+<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	printf(<span class="string">"a[3]: %d<span class="subst">\n</span>"</span>,a[<span class="number">3</span>]);</span><br><span class="line">	return <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote><p>10 line -&gt; p=0x7ffeec239830<br>11 line -&gt; p+1=0x7ffeec239840<br>13 line -&gt; a[3]: 10</p>
+</blockquote>
+
+<p>만약에 int (*p)[4]에 &amp;a를 대입한게 아니라, int *p=&amp;a를 대입했다면, 컴파일 할 때, 경고 문자를 볼 수 있어요. 그 이유는 &amp;연산자는 Decay 문법의 적용 대상이 아니기 때문이죠.</p>
+<blockquote><p>warning: incompatible pointer types initializing ‘int <em>‘ with an<br>      expression of type ‘int (</em>)[4]’ [-Wincompatible-pointer-types]<br>        int *p=&a;</p>
+</blockquote>
+
+<br>
+
+<p>int *p=&amp;a 는 int [4] 대상체의 주소를 int * 대상체에 집어 넣는 것이기 때문이죠. 즉, 자료형이 서로 다르기 때문에 경고 문자가 나타나는 거에요.</p>
+<p>그에 반면, int (*p)[4]=&amp;a 같은 경우에는 int [4] 대상체의 주소를 int [4]의 메모리 주소 값을 가질 수 있는 대상체에 집어 넣기 때문에 경고 문자 없이 깔끔하게 컴파일이 되는거에요.</p>
+<p>그래서 코드의 출력 결과를 보면, p가 가리키고 있는 녀석이 int [4] 이기 때문에 주소 값이 16이 증가한 것을 볼 수 있고, (*p)[3]을 통해 a[3]의 값을 바꿀 수 있는 이유는 int [4]의 메모리 주소 값을 가지고 있는 p를 역참조해서 a의 메모리 주소로 이동하고 첨자 [3]을 통해서 a의 세번째 인덱스를 접근해 값을 변경할 수 있는 거에요.</p>
+<br>
+
+<h2 id="포인터를-배열처럼-사용해보자"><a href="#포인터를-배열처럼-사용해보자" class="headerlink" title="포인터를 배열처럼 사용해보자."></a>포인터를 배열처럼 사용해보자.</h2><p>포인터를 어떠게 배열처럼 사용해야 하는지 차근차근 알아봅시다.</p>
+<br>
+
+<h3 id="배열을-포인터-접근으로-바꿔보자"><a href="#배열을-포인터-접근으로-바꿔보자" class="headerlink" title="배열을 포인터 접근으로 바꿔보자"></a>배열을 포인터 접근으로 바꿔보자</h3><p>배열로 선언한 것을 포인터를 이용해서 접근을 해봅시다.<br>아래의 처럼 선언했다고 생각해봅시다.</p>
+<blockquote><p>int a[5]={1,2,3,4,5};</p>
+</blockquote>
+
+<p>이때, a가 요소 1,2,3,4,5를 포인터를 이용해서 어떻게 접근해야할까요?<br>바로 답은 아래와 같습니다.</p>
+<blockquote><p>*(a)         // 인덱스 0에 접근<br>*(a + 1)    // 인덱스 1에 접근<br>*(a + 2)    // 인덱스 2에 접근<br>*(a + 3)    // 인덱스 3에 접근<br>*(a + 4)    // 인덱스 4에 접근</p>
+</blockquote>
+
+<p>배열의 이름은 배열의 요소의 첫번째 값을 가리키는 주소가 들어가 있습니다.<br>*(a + 1) 을 하면, 배열의 요소의 첫번째 값을 가리키는 주소에 변수 a가 가리키는 대상체인 int형의 크기 * 1을 더한 값을 역참조를 하기 때문에 배열의 요소의 2번째 값을 가리키는 녀석에 접근할 수 있는 것입니다.<br>마찬 가지로 인덱스 4에 접근을 할려면 *(a + 4)를 이용하면 됩니다.</p>
+<h3 id="이차원배열과-포인터"><a href="#이차원배열과-포인터" class="headerlink" title="이차원배열과 포인터"></a>이차원배열과 포인터</h3><p>이러한 접근 방식을 이차원 배열에서 적용시켜 봅시다.<br>아래처럼 값을 선언했다고 생각해봐요.</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a[<span class="string">2</span>][<span class="symbol">2</span>]=&#123;1,2,3,4&#125;;</span><br><span class="line">int *p=a;</span><br><span class="line">p[<span class="string">1</span>][<span class="symbol">1</span>]=10;</span><br></pre></td></tr></table></figure>
+
+<p>이때, a의 메모리 주소는 1000이라고 생각해요.</p>
+<blockquote><p>p[1][1]<br>( *( p + 1 ) )[1]<br>( *( 1000 + sizeof(int) * 1 ) )[1]<br>( *1004 )[1]<br>*( *1004 + 1 )<br>*( 2 + 1 )<br>*3 // 이 때, 컴파일 에러가 발생, * 연산자를 이상한 주소 값을 가르켰기 때문.</p>
+</blockquote>
+
+<p>변수 p의 메모리 번지가 바뀌는 것을 봅시다.<br>p[1][1]은 ( <em>(p + 1) )[1]로 변경이 가능합니다.<br>그 후에 p가 가지고 있는 값은 1000이 되고, p가 가리키고 있는 대상체는 int형이기 때문에 1은 int형의 크기</em>1 로 변환이 됩니다. -&gt; ( *( 1000 + sizeof(int) * 1) )[1]<br>이를 간략하게 보면, ( *1004 )[1]이 되고, *( *1004 + 1)로도 표현이 가능합니다.<br>1004는 배열의 두번쨰 인덱스의 값인 2를 가리키게 되서, *( 2 + 1) 로 변환이 됩니다.<br>그렇다면, *(3) 이것의 의미는 3이라는 메모리 번지에 접근하는 것이기 때문에, 이상한 주소에 접근하게 되므로 컴파일 에러가 발생합니다.<br>요즘은 컴파일러가 좋아서인지 경고 문자를 보내고, 컴파일이 됩니다.<br>그리고 당연히 포인터를 이차원 배열처럼 사용은 불가능합니다.</p>
+<br>
+
+<p>이번에는 이중 포인터를 이용했다고 생각해봐요.</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a[<span class="string">2</span>][<span class="symbol">2</span>]=&#123;1,2,3,4&#125;;</span><br><span class="line">int **p=a;</span><br><span class="line">p[<span class="string">1</span>][<span class="symbol">1</span>]=10;</span><br></pre></td></tr></table></figure>
+
+<p>이때, a의 메모리 주소는 마찬가지로 1000 입니다.</p>
+<blockquote><p>p[1][1]<br>*( *(p + 1) + 1)<br>*( *(1000 + 1) + 1)<br>*( *(1000 + sizeof( int * ) * 1) + 1)<br>*( *(1008) + 1)<br>*( 0x0000000300000004 + 1)<br>*( 0x0000000300000004 + sizeof(int) * 1)<br>*( 0x0000000300000008 ) // 이 때, 잘못된 번지에 접근을 하기 때문에 run time 에러가 발생.</p>
+</blockquote>
+
+<p>변수 p의 메모리 주소가 바뀌는 것을 봅시다.<br>p[1][1]은 <em>( *(p + 1) + 1) 변경이 가능합니다.<br>a의 메모리 주소가 1000이므로, *( *(1000 + 1) + 1) 으로도 변경이 가능합니다.<br>그리고 이때 p가 가리키는 대상체는 int * 이므로, *( *(1000 + sizeof( int * ) * 1) + 1) 으로 볼 수 있습니다. 이를 계산하면, *( *(1008) + 1) 으로 표현이 가능합니다.<br>이 때, int *</em> 이므로 이를 역참조하면 int * 이므로, 역참조를 한다고 하더라도 주소 값을 가져오는 것이기 때문에 0x0000000300000004가 되어서, *(0x0000000300000004+1) 으로 표현이 가능합니다. 이 때, 가리키는 대상체가 int형이므로, *(0x0000000300000004+sizeof(int) * 1) 으로 표현이 가능합니다.<br>따라서 *0x0000000300000008 이라는 잘못된 번지에 접근을 하기 때문에 run time 에러가 발생하는 것입니다. 그 뿐만 아니라 컴파일 에러도 발생 합니다.</p>
+<br>
+
+<p>그렇다면, 포인터를 이차원 배열처럼 사용할러면 어떻게 선언하면 될까요?<br>아래처럼 선언하면 됩니다.</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a[<span class="string">2</span>][<span class="symbol">2</span>]=&#123;1,2,3,4&#125;;</span><br><span class="line">int (*p)[2]=a;</span><br><span class="line">p[<span class="string">1</span>][<span class="symbol">1</span>]=10;</span><br></pre></td></tr></table></figure>
+
+<p>이번에도 a의 메모리 주소는 이번에도 1000입니다.</p>
+<blockquote><p>p[1][1]<br>*( *(p + 1) + 1)<br>*( *(1000 + sizeof(int [2]) * 1 ) + 1)<br>*( *(1008) + 1)<br>*( 1008 + 1)<br>*( 1008 + sizeof(int) * 1)<br>*(1012)</p>
+</blockquote>
+
+<p>p의 메모리 주소가 바뀌는 것을 한번더 봅시다.<br>p[1][1]을 포인터 접근으로 변환하면, *( *(p + 1) + 1)로 변환이 가능하고, p는 대상체 int [2]를 가리키기 때문에, *( *(1000 + sizeof(int [2]) * 1) + 1)로 바뀝니다.<br>이걸 간략화하면, *( *(1008) + 1) 으로 바꿀 수 있습니다. p 는 내부에 있는 이름 없는 배열을 가리키고 있기 때문에, Decay 문법에 의해 int [2] 타입이 int * 타입으로 변환되기 때문에 *( 1008 + 1)이 됩니다.<br>이 때, 가리키는 대상체는 int형 이기 때문에 *( 1008 + sizeof(int) * 1) 이 되고, 간략화하면, *(1012)가 되어서, a[1][1]에 해당하는 값인 4를 10으로 바꿀 수 있게 되는 것입니다.</p>
+<br>
+
+<p><strong>즉, 배열과 포인터의 관계를 이해하기 위해서는 Decay 에 대해 알아야 하고, Decay 을 이용하면 배열의 이름이 첫 번째 원소의 주소로 해석된다는 것을 알고 있으면 됩니다.</strong></p>
+<br>
+
+<h2 id="배열을-포인터적으로-해석해보자"><a href="#배열을-포인터적으로-해석해보자" class="headerlink" title="배열을 포인터적으로 해석해보자"></a>배열을 포인터적으로 해석해보자</h2><p>먼저 기본적으로 단일 포인터를 해석합시다.</p>
+<blockquote><p>타입 해석<br>int* p // pointer to int</p>
+<p>자체 크기<br>sizeof(p)<br>sizeof(int *)<br>-&gt; 64 bit는 8Byte, 32 bit는 4Byte</p>
+<p>한번 움직이는 거리(offset)<br>p + 1<br>p + sizeof( *p ) + 1<br>p + sizeof( int ) * 1<br>p + 4</p>
+</blockquote>
+
+<p>int * 타입은 자기 자신의 크기는 64비트 기준 8바이트 이고, 가리키는 대상체가 int 형이기 때문에 offset 값이 4입니다.</p>
+<br>
+
+<h3 id="일차원-배열의-포인터적-해석"><a href="#일차원-배열의-포인터적-해석" class="headerlink" title="일차원 배열의 포인터적 해석"></a>일차원 배열의 포인터적 해석</h3><blockquote><p>타입해석<br>int a[2] // array of 2 int<br>자체 크기<br>sizeof( a )<br>sizeof( int [2] ) // 8Byte</p>
+<p>한번 움직이는 거리(offset)<br>a + 1<br>a + sizeof( *a ) * 1<br>a + sizeof( int ) * 1<br>a + 8</p>
+</blockquote>
+
+<p>int [2] 타입은 자기 자신의 크기는 8바이트이고, 가리키는 대상체가 int 형이기 때문에 offset 값이 4입니다.</p>
+<h3 id="포인터-배열의-포인터적-해석"><a href="#포인터-배열의-포인터적-해석" class="headerlink" title="포인터 배열의 포인터적 해석"></a>포인터 배열의 포인터적 해석</h3><blockquote><p>타입 해석<br>int *a[2] // array of 2 pointer to int</p>
+<p>자체 크기<br>sizeof( a )<br>sizeof( int *[2] ) // 16Byte</p>
+<p>한번 움직이는 거리(offset)<br>a + 1<br>a + sizeof( <em>a ) * 1<br>a + sizeof( int</em> ) * 1<br>a + 8</p>
+</blockquote>
+
+<p>전치랑 후치가 존재할 때, 후치가 먼저 해석되기 때문에 배열 포인터가 아니라 포인터 배열로 해석된다.<br>int *[2] 타입은 자기 자신의 크기는 16바이트이고, 가리키는 대상체가 int *형이기 때문에 offset 값기 8입니다.</p>
+<h3 id="배열의-포인터의-포인터적-해석"><a href="#배열의-포인터의-포인터적-해석" class="headerlink" title="배열의 포인터의 포인터적 해석"></a>배열의 포인터의 포인터적 해석</h3><blockquote><p>int (*p)[2] // pointer to array of 2 int</p>
+<p>자체크기<br>sizeof( p )<br>sizeof( int (*)[2] ) // 8Byte</p>
+<p>한번 움직이는 거리(offset)<br>p + 1<br>p + sizeof( *p ) * 1<br>p + sizeof( int [2] ) + 1<br>p + 8</p>
+</blockquote>
+
+<p>전치랑 후치가 존재할 때, 후치가 먼저 해석되기 때문에 배열 포인터를 사용하기 위해서는 괄호를 쳐서 우선 순위를 높여줘야 한다.<br>int *[2] 타입은 자기 자신의 크기는 8바이트이고, 가리키는 대창체가 int [2] 형이기 때문에 offset 값은 8입니다.</p>
+<h3 id="이중-포인터의-포인터적-해석"><a href="#이중-포인터의-포인터적-해석" class="headerlink" title="이중 포인터의 포인터적 해석"></a>이중 포인터의 포인터적 해석</h3><blockquote><p>타입해석<br>int **p // pointer to pointer to int</p>
+<p>자체크기<br>sizeof( p )<br>sizeof( int ** ) // 8Byte</p>
+<p>한번 움직인느 거리(offset)<br>p + 1<br>p + sizeof( *p ) * 1<br>p + sizeof( int * ) * 1<br>p + 8</p>
+</blockquote>
+
+<p>int ** 타입은 자기 자신의 크기는 8바이트이고, 가리키는 대상체가 int * 형이기 때문에 offset 값은 8입니다.</p>
+<h3 id="이차원-배열의-포인터적-해석"><a href="#이차원-배열의-포인터적-해석" class="headerlink" title="이차원 배열의 포인터적 해석"></a>이차원 배열의 포인터적 해석</h3><blockquote><p>타입해석<br>int a[2][2] // array of 2 array of 2 int</p>
+<p>자체 크기<br>sizeof( p )<br>sizeof( int [2][2] ) // 16Byte</p>
+<p>한번 움직이는 거리(offset)<br>a + 1<br>a + sizeof( *a ) * 1<br>a + sizeof( int [2] ) * 1<br>a + 8</p>
+</blockquote>
+
+<p>int [2][2] 타입은 자시 자신의 크기는 16바이트이고, 가리키는 대상체가 int [2] 형이기 때문에 offset 값은 8입니다.</p>
+<h3 id="삼차원-배열의-포인터적-해석"><a href="#삼차원-배열의-포인터적-해석" class="headerlink" title="삼차원 배열의 포인터적 해석"></a>삼차원 배열의 포인터적 해석</h3><blockquote><p>int a[2][2][2] // array of 2 array of 2 array of 2 int</p>
+<p>자체크기<br>sizeof( a )<br>sizeof( int [2][2][2] ) // 32byte</p>
+<p>a[0][0][0] : 0x7ffee4de57b0<br>a[0][0][1] : 0x7ffee4de57b4<br>a[0][1][0] : 0x7ffee4de57b8<br>a[0][1][1] : 0x7ffee4de57bc<br>a[1][0][0] : 0x7ffee4de57c0<br>a[1][0][1] : 0x7ffee4de57c4<br>a[1][1][0] : 0x7ffee4de57c8<br>a[1][1][1] : 0x7ffee4de57cc</p>
+<p>한번 움직이는 거리(offset)<br>a + 1<br>a + sizeof( *a ) * 1<br>a + sizeof( int [2][2] ) * 1<br>a + 16</p>
+</blockquote>
+
+<p>int [2][2][2] 타입은 자기 자신의 크기는 32바이트이고, 가리키는 대상체가 int [2][2] 형이기 때문에 offset 값은 8입니다.</p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+        <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block home">
     <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/24/UnderstandC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -265,7 +493,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-27 12:47:35" itemprop="dateModified" datetime="2019-09-27T12:47:35+09:00">2019-09-27</time>
+                <time title="Modified: 2019-10-04 03:25:56" itemprop="dateModified" datetime="2019-10-04T03:25:56+09:00">2019-10-04</time>
               </span>
             
           
@@ -338,9 +566,6 @@
 <p>제 cpu는 IA-64 계열이라서 int 형의 크기가 4바이트, int 포인터 형의 크기가 8바이트, int 포인터 형의 역참조 크기가 4바이트가 나옵니다.</p>
 <p>int 포인터 형의 역참조 크기가 4바이트가 나오는 이유는 int 포인터 형이 가리키고 있는 녀석이 int 형이기 때문입니다. 그래서 4바이트 크기가 나오는 것입니다.</p>
 <p>char 포인터 형의 역참조 크기는 몇 바이트가 나올까요? char 포인터 형의 크기는 IA-64 계열에서 int 포인터 형의 크기처럼 8바이트가 나오지만, 역참조의 크기는 4바이트가 아니라 1바이트가 나옵니다. 그 이유는 char 포인터 형의 역참조는 char 형을 가리키기 때문이죠.</p>
-<br>
-
-<p>다음 포스팅은 포인터와 배열의 관계에 대한 것입니다.</p>
 
         
       
@@ -1906,173 +2131,6 @@
   </article>
 
     
-        <article itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block home">
-    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/12/HowToCreateBlogUingHexo2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="777bareman777">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="777bareman777 Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-            
-            <a href="/2019/09/12/HowToCreateBlogUingHexo2/" class="post-title-link" itemprop="url">Hexo 블로그 만들기 삽질 일지 - 2</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-09-12 16:16:19" itemprop="dateCreated datePublished" datetime="2019-09-12T16:16:19+09:00">2019-09-12</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-19 22:07:54" itemprop="dateModified" datetime="2019-09-19T22:07:54+09:00">2019-09-19</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-        
-      
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2019/09/12/HowToCreateBlogUingHexo2/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/12/HowToCreateBlogUingHexo2/" itemprop="commentCount"></span></a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>어떤 기기에서든 hexo 블로그를 업데이트 하기 위해서는 hexo 프로젝트와 hexo 테마를 백업을 해야 한다.</p>
-<p>그 이유는 hexo 프로젝트를 통해서 배포를 할 때, 올라가는 데이터들은 웹사이트을 구동시킬 때 필요한 데이터들이 USERNAME.github.io 에 올라 가는 것이기 때문이다. </p>
-<p>즉, hexo 블로그를 만들면서 포스팅 했던 데이터들은 github에 올라가지 않는다.<br>따라서 별도로 hexo 프로젝트를 백업할 필요가 있다.</p>
-<br>
-
-<h2 id="어디서-백업을-해야할까"><a href="#어디서-백업을-해야할까" class="headerlink" title="어디서 백업을 해야할까?"></a>어디서 백업을 해야할까?</h2><p>다시 한번 말하자면, hexo 프로젝트 안에 있는 데이터를 보관하기 위한 새로운 저장소를 만들어야 한다.</p>
-<p>github 을 이용하든 gitlab을 이용하든 상관은 없다.<br>하지만 배포를 할 떄 github을 이용했고, github에서 현재 private도 무료로 서비스를 제공하기 때문에 github을 사용하는 것이 좋다.</p>
-<p>저장소를 만들 때,<br>private를 선택하든, public를 선택하든 상관은 없다.<br>자신의 데이터를 공개하고 싶지 않다면, private를 선택하는 것이고, 자신의 데이터를 공개해도 좋다고 하면, public을 선택할 뿐이다.</p>
-<br>
-
-<h2 id="새로운-저장소-생성"><a href="#새로운-저장소-생성" class="headerlink" title="새로운 저장소 생성"></a>새로운 저장소 생성</h2><p>저장소는 총 2개가 필요하다. 하나는 테마를 보관할 곳, 또 다른 하나는 hexo 프로젝트를 보관할 곳이다.</p>
-<p>저장소의 이름은 사용자가 구분하기 쉽고, 쉽게 이용할 수 있는 이름으로 정하면 된다.</p>
-<p>나 같은 경우에는 설명하기 쉽게 hexo 프로젝트를 저장할 공간인 <em>blog</em> 테마를 저장할 공간인 <em>theme</em> 라는 이름으로 만들었다.</p>
-<br>
-
-<h3 id="hexo-프로젝트-백업하기"><a href="#hexo-프로젝트-백업하기" class="headerlink" title="hexo 프로젝트 백업하기"></a>hexo 프로젝트 백업하기</h3><p>hexo 프로젝트를 백업하는 방법은 간단하다.<br>다음처럼 git을 만들어 주기만 하면된다.</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># initialize git</span></span><br><span class="line">git init</span><br><span class="line"></span><br><span class="line"><span class="meta"># add contents</span></span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line"><span class="meta"># commit contents</span></span><br><span class="line">git commit -m <span class="string">"Initial commit"</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># change remote repository</span></span><br><span class="line">git remote add origin https:<span class="comment">//github.com/777bareman777/blog.git</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># push contents</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h3 id="테마-백업하기"><a href="#테마-백업하기" class="headerlink" title="테마 백업하기"></a>테마 백업하기</h3><p>직접 만든 경우에는 상관은 없지만, 다른 사람들이 만든 테마 같은 경우에는 백업하기가 힘들다.</p>
-<p>fork를 하든, duplicate를 하든 상관이 없다.<br>어차피 원래의 테마 개발자가 업데이트를 하고, 우리가 그것을 따르고 싶다면, 우리가 설정했던 것들은 날라가기 때문이다.</p>
-<p>-&gt; 그럴 경우에는 자신이 설정했던 파일들을 따로 백업을 하는 것이 좋음.</p>
-<p>그렇지 않고, 그 테마를 가지고 스스로 수정하고 싶다면 fork를 하는 것이 좋을지도 모른다.</p>
-<p>일단은 duplicate를 했을 때를 생각해보자.</p>
-<p>원하는 테마를 고르고 duplicate를 하고, 저장소 위치를 우리가 theme를 만들고자 했던 곳으로 바꾸고,<br>안에 있는 데이터들을 올리기만 하면된다.</p>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clone theme</span></span><br><span class="line"><span class="string">git </span><span class="string">clone </span><span class="string">https:</span>//<span class="string">github.</span><span class="string">com/</span><span class="string">aircloud/</span><span class="string">hexo-theme-</span><span class="string">aircloud</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span> <span class="string">check </span><span class="string">remote </span><span class="string">repository</span></span><br><span class="line"><span class="string">git </span><span class="string">remote </span>-v</span><br><span class="line"></span><br><span class="line"><span class="comment"># change retmoe repository</span></span><br><span class="line"><span class="string">git </span><span class="string">remote </span><span class="built_in">set-url</span> <span class="string">origin </span><span class="string">https:</span>//<span class="string">github.</span><span class="string">com/</span><span class="string">777bareman777/</span><span class="string">theme</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">#</span> <span class="string">add </span><span class="string">contents</span></span><br><span class="line"><span class="string">git </span><span class="string">add </span>.</span><br><span class="line"></span><br><span class="line"><span class="comment"># commit contents</span></span><br><span class="line"><span class="string">git </span><span class="string">commit </span>-m <span class="string">"Initial commit"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># push contents</span></span><br><span class="line"><span class="string">git </span><span class="string">push </span>-u <span class="string">origin </span><span class="string">master</span></span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h2 id="서브모듈-추가하기"><a href="#서브모듈-추가하기" class="headerlink" title="서브모듈 추가하기"></a>서브모듈 추가하기</h2><p>테마 폴더를 hexo 프로젝트에 push 하기 전에 고려해야할 점이 있다. git안에 git이 있는 경우 서로의 독립성을 유지하면서 서로의 버전을 따로 관리 하기 위해서 서브모듈로 추가해서 관리하는 것이 필수이다.</p>
-<p>서브모듈에 대한 자세한 설명은 아래의 블로그를 참고하기 바란다.</p>
-<ul>
-<li><a href="https://www.tuwlab.com/ece/26011" target="_blank" rel="noopener">서브모듈에 대해 이해하기</a></li>
-</ul>
-<p>그럼 서브모듈을 hexo 프로젝트에 추가해보자.</p>
-<p>먼저 hexo 프로젝트로 이동을하고, hexo 프로젝트 안에 있는 themes 폴더에 테마를 서브모듈로 추가한다. 그 후에 제대로 변경이 되었는지 확인을 하고 변경된 내용을 push 하면 된다.</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># add theme repository in hexo theme folder as submodule</span></span><br><span class="line">git submodule add https:<span class="comment">//github.com/777bareman777/theme themes/aircloud</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># check status</span></span><br><span class="line">git status</span><br><span class="line">git submodule status</span><br><span class="line"></span><br><span class="line"><span class="meta"># add contents</span></span><br><span class="line">git add .</span><br><span class="line"></span><br><span class="line"><span class="meta"># commit contents</span></span><br><span class="line">git commit -m <span class="string">"Initial commit"</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># push contents</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h2 id="마지막으로…"><a href="#마지막으로…" class="headerlink" title="마지막으로…"></a>마지막으로…</h2><p>이러한 작업을 거치면 github에서 hexo 프로젝트와 테마를 관리해주기 때문에 데이터가 날라가도 다시 복구를 할 수가 있다.</p>
-<p>데이터가 날라갔을 떄, 복구하는 방법은 다음과 같다.</p>
-<p>먼저 hexo 프로젝트를 불러온다. 그 후에 서브모듈을 초기화 시키고 업데이트 시켜서 서브모듈의 데이터들을 가져온다. 서브모듈은 또 다른 git으로 이루어져 있기 때문에 그 독립성과 버전 관리를 위해서 데이터를 포함하고 있지 않기 때문이다. 마지막으로 local hexo를 다시 설치해줘야 한다.</p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">git</span> clone https://github.com/<span class="number">777</span>bareman777/<span class="keyword">blog</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">git </span><span class="keyword">submodule </span>init</span><br><span class="line"></span><br><span class="line"><span class="symbol">git</span> <span class="keyword">submodule </span>update</span><br><span class="line"></span><br><span class="line"><span class="symbol">npm</span> install hexo --save</span><br></pre></td></tr></table></figure>
-
-<br>
-
-<h2 id="진짜-마지막으로…"><a href="#진짜-마지막으로…" class="headerlink" title="진짜 마지막으로…"></a>진짜 마지막으로…</h2><p>변경된 사항을 github에 push를 하기 전에 Slave(submodule) 먼저 push를 한후 Master(iriginal git)을 push를 해야 한다.</p>
-<p>Master -&gt; Slave의 순서로 commit을 하게 되면, 다시 한번 더 Master에서 변경사항이 있다는 것을 알게 된다.</p>
-<p>이렇게 작동 하는 이유는 Slave가 Master를 바라볼 때 Abstraction되는 방식으로 관리하기 때문이다.</p>
-<p>Slave에서 변경된 사항은 Master에서 commit 할 때, 파일들을 Tracking 하는 것이 아니라 Slave의 HEAD가 무엇으로 변경되었는지에 대한 정보만 기록하기 때문이다.</p>
-<br>
-<br>
-<br>
-<br>
-<br>
-
-<h2 id="이전-포스팅"><a href="#이전-포스팅" class="headerlink" title="이전 포스팅"></a>이전 포스팅</h2><hr>
-<p><a href="../HowToCreateBlogUingHexo">Hexo 블로그 만들기 삽질 일기 - 1</a></p>
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </div>
 
   
@@ -2122,7 +2180,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
