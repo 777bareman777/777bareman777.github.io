@@ -225,6 +225,104 @@
   
   
   <div class="post-block home">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2020/01/15/DifferenceBetweenFarCallandNearCAll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+            
+            <a href="/2020/01/15/DifferenceBetweenFarCallandNearCAll/" class="post-title-link" itemprop="url">DifferenceBetweenFarCallandNearCAll</a>
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-15 12:55:19 / Modified: 13:08:56" itemprop="dateCreated datePublished" datetime="2020-01-15T12:55:19+09:00">2020-01-15</time>
+            </span>
+          
+            
+
+            
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/01/15/DifferenceBetweenFarCallandNearCAll/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/01/15/DifferenceBetweenFarCallandNearCAll/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="FAR-CALL-NEAR-CALL"><a href="#FAR-CALL-NEAR-CALL" class="headerlink" title="FAR CALL, NEAR CALL ??"></a>FAR CALL, NEAR CALL ??</h1><p>프로그래밍에서 CALL 이란 서브루틴 또는 서브 프로그램에 프로그램의 실행을 넘기는 것 또는 그 조작을 위해서 사용되는 명령어로서 생각을 하면 됩니다.</p>
+<p>세그먼트 영역이 생겨나면서, 코드, 데이터등을 분리시켜서, 샌드박스화를 시켰을 때, 현재 세그먼트 영역을 벗어난 JUMP, CALL 명령어를 하기 위해서 생겨난 개념이라고 합니다.</p>
+<p>여기서 세그먼트란 프로그램이나 메모리의 부분을 말하며, 프로그램의 경우는 주기억에 탑재하는 단위를 세그먼트라고 생각하시면 됩니다. 메모리의 경우는 하나의 주소 레지스터로 지정되는 메모리 영역을 말합니다.</p>
+<p><strong>세그먼트 외부의 세그먼트를 호추할 때는 FAR CALL</strong>을 사용하고, <strong>세그먼트 내부에서 호출 할 때는 NEAR CALL</strong>을 사용합니다.</p>
+<h2 id="FAR-CALL-과-NEAR-CALL의-차이점"><a href="#FAR-CALL-과-NEAR-CALL의-차이점" class="headerlink" title="FAR CALL 과 NEAR CALL의 차이점"></a>FAR CALL 과 NEAR CALL의 차이점</h2><p>FAR CALL 과 NEAR CALL의 차이점은 CS(Code Segment Register)의 저장여부에 있습니다.</p>
+<p>예를 들어, Kernel 구현시 CALL 0x0900:offset으로 넘기면, CS에 0x0900이 들어가게 됩니다. 그리고 CS에 들어간 주소가 복귀 주소가 되는데, 이 경우 FAR CALL을 뜻합니다. 반대로 CALL 0x0900 으로 하면 NEAR CALL을 뜻합니다.</p>
+<p>즉, <strong>FAR CALL은 Stack에 CS:IP 값을 저장하고 지정된 곳으로 분기하는 상대 주소 지정 방식(Relative Address Mode)</strong> 입니다.</p>
+<p>그리고 <strong>NEAR CALL은 Stack에 IP 값을 저장하고 지정된 곳으로 분기하는 간접 주소 지정 방식(Indirect Address Mode)</strong> 입니다.</p>
+<br>
+
+<h3 id="참고문헌"><a href="#참고문헌" class="headerlink" title="참고문헌"></a>참고문헌</h3><p>본 내용은 새한CLL아카데미(<a href="http://shcll.wo.to)에서" target="_blank" rel="noopener">http://shcll.wo.to)에서</a> 발췌했음을 알립니다.<br>[출처] Far Call, Near call 완전정복 (전자계산기 기사/산업기사) |작성자 ddaroapt</p>
+<p><a href="https://m.blog.naver.com/PostView.nhn?blogId=eom913&amp;logNo=113939652&amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F" target="_blank" rel="noopener">https://m.blog.naver.com/PostView.nhn?blogId=eom913&amp;logNo=113939652&amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F</a></p>
+
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+          <div class="post-eof"></div>
+        
+      </footer>
+  </div>
+  
+  
+  
+  </article>
+
+    
+        <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block home">
     <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2020/01/14/WindowsAPIHookingUsingIAT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1930,175 +2028,6 @@
   </article>
 
     
-        <article itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block home">
-    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2019/09/16/HamsterBreddingDiary/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="777bareman777">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="777bareman777 Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-            
-            <a href="/2019/09/16/HamsterBreddingDiary/" class="post-title-link" itemprop="url">햄스터 기르기 일지 - 기본편</a>
-          
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              
-                
-              
-
-              <time title="Created: 2019-09-16 01:50:23" itemprop="dateCreated datePublished" datetime="2019-09-16T01:50:23+09:00">2019-09-16</time>
-            </span>
-          
-            
-
-            
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-09-19 22:04:20" itemprop="dateModified" datetime="2019-09-19T22:04:20+09:00">2019-09-19</time>
-              </span>
-            
-          
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/hamster/" itemprop="url" rel="index"><span itemprop="name">hamster</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-        
-      
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2019/09/16/HamsterBreddingDiary/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/09/16/HamsterBreddingDiary/" itemprop="commentCount"></span></a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>어젯밤에 이마트에서 햄스터를 <strong>봤는데</strong>, 너무 귀여운거 있죠<br>그 중에서 가장 유독 눈이 띄는 아이가 있었어요.<br>다른 아이들은 친구들과 놀고 있는데, 펄 햄스터라고 불리는 아이 한명이 계속 잠만 자고 있는 거에요.<br>이 친구가 내 맘을 흔들더라고요.</p>
-<p>지금 당장 데리고 가고 싶었는데, 지금은 분양 받을 수 없다고 하더라고요.<br>그 떄 시간이 오후 10시 30분이었으니까… ㅎㅎㅎ<br>데려갈 수 없었던게 당연한 걸지도 몰라요.<br>덕분에 햄스터를 키우는 데 필요한 용품들을 더 자세하게 찾아보게 되었어요.<br>천만다행이었죠!!<br>그때 햄스터를 데리고 왔다면, 햄스터는 좋은 환경에서 살지도 못하고, 스트레스를 받았을 거에요</p>
-<p>아 그리고 다음날 데리고 왔는데, 아라찌(햄스터)가 은신처에서 잠을 자고 있는데, 관리 하시는 분이 오셔서 은신처에서 쉬고 있는 얘를 탁탁 털어서 꺼내더라고요. 순간 가슴이 철렁했답니다.</p>
-<br>
-
-<h2 id="햄스터에게-필요한-것들"><a href="#햄스터에게-필요한-것들" class="headerlink" title="햄스터에게 필요한 것들"></a>햄스터에게 필요한 것들</h2><p>너무 데리고 데리고 가고 싶어서, 필요한 것들을 이것저것 찾아 봤어요.<br>햄스터를 기르는데 필수적으로 있어야 하는 것들은<br><strong>햄스터 케이지</strong>, <strong>햄스터 집</strong>, <strong>쳇바퀴</strong>, <strong>급수기</strong>, <strong>급식기</strong>, <strong>베딩</strong>, <strong>밥</strong> 이라고 해요. 일단은 이렇게 7가지가 필수적으로 있어야 된다고 해요.</p>
-<p>그 중 가장 중요한 것은 햄스터 케이지에요!</p>
-<br>
-
-<h3 id="햄스터-케이지"><a href="#햄스터-케이지" class="headerlink" title="햄스터 케이지"></a>햄스터 케이지</h3><p>햄스터한테 케이지는 가장 중요한 물품에 속해요.<br>케이지의 크기에 따라서 햄스터의 활동반경이 정해지는 지거든요.</p>
-<p>케이지의 종류는 여러가지가 있어요.<br><strong>철장 케이지</strong>, <strong>채집통 케이지</strong>, <strong>수족관 케이지</strong>, <strong>터널형 케이지</strong>, <strong>리빙박스 케이지</strong>이 있어요.</p>
-<p>옛날에는 햄스터를 유통될 때, 가장 손쉽게 구할 수 있는 철장 케이지를 많이 사용했다고 해요.<br>요즘은 철장 비스무리한 플라스틱 케이지도 많이 유통이 되는 것 같아요. 이마트에서 이런 비스무리한<br>플라스틱 철장 케이지를 판매를 하고 있어요.</p>
-<p>채집통 케이지는 소,중,대 사이즈가 있다고해요.<br>보통 일반적으로 채팁통의 크기는 햄스터를 기르기에는 작다고 해요. 일반적으로 햄스터를 다른 곳으로 이동시킬 떄, 이동장 역할로 많이 사용한다고 해요.</p>
-<p>수족관 케이지는 공간이 협소한 우리나라에서는 볼 수 없다고 해요. 보통 일반적으로 서양권에서 볼 수 있다고 해요. 기다란 수족관에다가 햄스터가 살 수 있는 환경을 구성한다고 해요.<br>햄스터들이 완전 기부니가 좋아서 방방 뛸 것 같아요 ㅎㅎ</p>
-<p>터널형 케이지는 햄스터들이 굴속에서 삶을 사는 그 환경을 그대로 재현할 수 있다고 해요. 하지만 가격이 비싸고 청소하기도 힘들어서 터널형 케이지는 자주 볼수 없는 케이스라고 합니다.</p>
-<p><strong>리빙박스 케이지</strong>는 우리나라에서 요즘에 흔히 볼 수 있는 햄스커 케이지라고 해요. 철장 케이지는 햄스터들이 다칠 수 있을 뿐만 아니라 크기가 커질 수록 가격이 상승하거든요. 수족관 케이스도 마찬가지죠.</p>
-<p>그래서 저렴한 리빙박스를 이용해서 햄스터 케이지를 개조하는 경우가 많다고 해요.<br><strong>드워프 햄스터</strong>는 못해도 리빙박스 <strong>55L</strong> 짜리를 구매를 해야 한다고 하고요. <strong>골든 햄스터</strong>는 못해도 <strong>68L</strong> 짜리를 구매를 해야 한다고 해요.</p>
-<p>그래서 아라찌(햄스터)를 데리고 올 때, 리빙박스 55L 짜리로 구매를 했어요. 빠르게 데려오고 싶은 마음 때문에 120L 짜리는 구매를 하지 못한게 아쉬워요.<br>대신 차후에 리빙박스에 구멍을 뚫어서 터널을 연결해서 더 큰 공간을 만들어줄 생각이에요!</p>
-<br>
-
-<h3 id="햄스터-집"><a href="#햄스터-집" class="headerlink" title="햄스터 집"></a>햄스터 집</h3><p>햄스터 집하고 햄스터 케이지는 다른 거에요. 햄스터를 키울 때, 햄스터의 넓은 활동반경을 조성을 할수가 없어요. 웬만한 부자가 아닌 이상은… 그래서 우리는 타협을 본거에요. 햄스터 케이지를 이만큼의 크기로 햄스터를 기르자. 즉, 햄스터 케이지의 크기는 햄스터의 활동반경의 크기에요.</p>
-<p>햄스터 집은 말그대로 자신만의 영역인거에요! 우리도 엄청나게 넓은 지구에서 살아가고 있잖아요. 그리고 자기 자신만의 집이 존재하죠? 햄스터도 마찬가지에요. 햄스터도 집이 필요해요. 즉, 햄스터 집, 은신처를 만들어주는 거에요.</p>
-<p>은신처는 2~3개 있으면 좋다고해요. 햄스터들이 번갈아가면서 사용한다고 해요. 은신처에다가 먹이를 보관하기도하고 그런다고 하네요 ㅎㅎ</p>
-<br>
-
-<h3 id="쳇바퀴"><a href="#쳇바퀴" class="headerlink" title="쳇바퀴"></a>쳇바퀴</h3><p>다른 햄스터를 키우는 분들이 말씀하시길, 햄스터에게 쳇바퀴를 제공하지 않으면 동물 학대라고 합니다. 무조건 쳇바퀴를 구매를 해야 한다고 하더라고요.</p>
-<p>그래서 쳇바퀴에 대해서 찾아봤어요. 싼 가격부터 비싼 가격까지 다양하게 있어요. 당연히 비싼게 가장 좋겠죠? 그렇지만 언제나 비싸고 좋은 제품을 살 수가 없용. 우리도 비싼게 좋다는 것을 알지만 항상 비싼것만 사면서 살지는 않잖아요. 그래서 가성비를 본다고 해요.</p>
-<p>쳇바퀴는 <strong>아크릴 쳇바퀴</strong>가 최고봉이라고 해요. 소리도 안나고, 햄스터들이 다칠 이유도 없다고 해요. 하지만 가격이 3만원 이상을 한다고 해요.</p>
-<p>저의 개인적인 생각으로는 발빠짐 쳇바퀴류만 아니면 괜찮다고 생각해요. 저는 소음에 민감한 편이 아니라서 햄스터들이 쳇바퀴 돌리는 시간이 짜증이 나지 않거든요. 그리고 돈이 넉넉한 편은 아니라서 가성비를 생각해서 저같은 경우에는 <strong>사일런트 휠</strong>을 구매를 했어요. 이거 같은 경우에는 만원정도에 인터넷에서 구매를 할 수 있어요.</p>
-<p>아직 쳇바퀴를 케이지 안에 배치를 못해서… 저는 햄스터를 학대하고 있답니다. ㅠㅠㅠ 쳇바퀴가 배송되자마자 바로 케이지에 넣어줄 거에요</p>
-<br>
-
-<h3 id="급수기와-급식기"><a href="#급수기와-급식기" class="headerlink" title="급수기와 급식기"></a>급수기와 급식기</h3><p>급식기 같은 경우에는 다이소에서 파는 자그마한 그릇으로 충분해요. 거기에다가 햄스터의 몸무게의 12% 해당하는 양만 배식하면 된다고 해요. 햄스터도 인간처럼 편식을 하는 동물이라고 해요. 그래서 원하는 것만 먹다보면, 쉽게 우리처럼 비만이 될 수 있다고 하니 음식 조절을 잘 해줘야 된다고 해요 ㅎㅎㅎ</p>
-<p>그리고 편식을 하지 않는 햄스터 같은 경우에는 큰 그릇에 하루 분량이 아니라 며칠치 분량을 놓아도 된다고 해요. 햄스터의 습성중 하나가 먹을 것들을 은식처에 숨기는 거라고 해요. 급식기에 먹을 것이 있다면, 햄스터들이 그 자리에서 먹지 않고 볼주머니에 음식을 가득 담고 은신처로 파파팍 가는 모습을 볼 수 있을 거에요.</p>
-<p>급수기는 그릇으로 해도 되고, 햄스터용으로 나온 전용 급수기를 사용해도 된다고 해요.<br>급수기는 종류가 여러가지라고 해요. <strong>볼 급수기</strong>, <strong>진공 급수기</strong> 하나 더 있었는데 기억이 안나네요. ㅎㅎ</p>
-<p>볼 급수기는 물이 누수가 발생하기도 하는데, 그런 것을 방지하기 위해서 만든게 진공 급수기라고 해요. 그래서 진공 급수기가 볼 급수기보다 비싸죠. 그렇다고 하더라도 그렇게 비싼 금액은 아니에요 ㅎㅎ</p>
-<p>그릇 같은 경우는 잘 사용하지 않는다고 해요. 그릇에 베딩이 들어갈 수도 있고, 햄스터들이 움직이면서 그릇에 이물질이 들어갈 수 있다고 해서 그릇은 깨끗하지 않다고 해요.그래서 그릇은 비추를 한다고 합니다.</p>
-<p>저 같은 경우에는 아라찌(햄스터)에게 <strong>거치대형 볼 급수기</strong>를 줄거에요. 리빙박스를 벽면을 뚫어서 거는 것보다는 바닥에 배치할 생각이에요. 아직 급수기가 안와서 그릇을 사용하고 있지만, 살짝 미안해지네요 ㅠㅠㅠ</p>
-<br>
-
-<h3 id="베딩"><a href="#베딩" class="headerlink" title="베딩"></a>베딩</h3><p>햄스터에게 중요한 것이라고 해요. 햄스터의 잠자리가 될 수도 있고, 햄스터의 놀이터가 될 수도 있거든요. 햄스터들이 파묻힐 수 있을 정도로 베딩을 깔아줘야 된다고 해요.</p>
-<p>베딩의 종류도 여러가지가 있어요. 톱밥도 있고, 종이 베딩도 있고, 천 베딩도 있어요. 톱밥 하고 종이 베딩은 햄스터의 면역력에 따라서 사용하면 된다고해요. 그 중에서도 끝판왕이 당연히 존재하겠죠? 그게 바로 <strong>아스펜 베딩</strong>이라고 해요. 다른 것들에 비해 가격이 비싸지만, 햄스터들에게 안전성이 보장된 베딩이라고 해요. 그리고 천 베딩은 웬만하면 사용하지 말라고 하네요. 천 베딩 같은 경우에는 꾸준히 갈아줘야 되서 여러 개를 구매할 뿐만 아니라 세탁을 하는 것도 귀찮고 햄스터들의 본능인 디깅을 하지 못한다는게 단점이에요. 물론 따로 디깅박스를 만들어준다고 하더라도 전 개인적으로 천 베딩을 하지 않을 것 같아요.</p>
-<p>하지만 햄스터가 아프다면, 천 베딩을 할거나, 베딩을 아에 깔지 않을지도 몰라요. 햄스터가 아플 경우에는 의료목적으로 베딩을 깔지 않는다고 해요.</p>
-<p>그리고 베딩에는 압축 베딩 비압축 베딩이 있다고해요. 압축 베딩은 말그대로 압축해서 베딩을 포장한 것이고요, 비압축 베딩은 압축하지 않은 상태로 베딩을 포장한 것이에요.<br>압축 베딩이 비압축 베딩에 비해 먼지가 많다고해요. 어찌됬든 압축 베딩과 비압축 베딩 둘다 먼지를 털어내고 사용하는 것이 좋다고 해요. 저도 알았다면, 먼지를 털어주고 깔아줬을 텐데… 먼저 데려오고 준비를 하다보니까… 미숙한 저의 모습이 보이는 것 같아요.</p>
-<p>저 같은 경우네느 펫 리터의 종이 베딩을 사용하고 있어요. 이마트에서 9000원 주고 구입했어요 ㅎㅎ. 55L 짜리 리빙박스에 이것을 다 부으니까 햄스터가 굴도파고 푹 파고 들어갈 수 있더라고요</p>
-<br>
-
-<h3 id="밥"><a href="#밥" class="headerlink" title="밥"></a>밥</h3><p>사람에게 있어서 밥이 중요하듯이 햄스터한테도 밥이 중요해요. 사람들도 건강을 지키는 사람들은 영분을 따져가면서 밥을 먹듯이 햄스터도 건강을 지킬러면 영양분을 따져가면서 먹어야 해요.<br>마트에서 파는 일반적인 사료들은 햄스터의 영양분을 충족시키지 못하는 저급사료라고 해요.<br>여기서 저급 사료는 사료의 질이 좋지 않다는게 아니라, 햄스터에게 영양분을 골고루 주지 못한다는 의미에요.</p>
-<p>그래서 좀더 찾아보면서 우리 햄스터에게 좋은게 뭐가 있을지 찾아볼 계획이에요 ㅎㅎ</p>
-<br>
-
-<h3 id="기타-등등"><a href="#기타-등등" class="headerlink" title="기타 등등"></a>기타 등등</h3><p>햄스터들은 일반적으로 대소변 훈련을 시킬수가 없다고 해요.<br>하지만 시킬수 있다고해요!!! 햄스터들은 소변을 볼 때, 가장자리에 소변을 보는 경향이 있는데, 그 부분을 잘 관찰해서 거기다가 화장실을 만들면, 거기서 소변을 보게 만들 수 있다고 해요.<br>똥 같은 경우에는 아무곳에서나 싸기 때문에 가릴수가 없다고 해요.</p>
-<p>똥 같은 경우에는 햄스터들이 자기가 어느 한 곳에다가 모아두는 경향이 있기도 하지만, 웬만해서는 그냥 흩뿌리고 다닌다고 하네요 ㅎㅎ 우리 햄스터들 귀엽죵 ㅎㅎㅎ</p>
-<p>저는 마트에서 파는 목욕용 모래를 가지고 왔어요. 근데 이게 알고보니까 엄청 햄스터들에게 안 좋다고 하더라고요. 그래서 햄스터들한테 좋은 사막모래로 바꿔줄 예정입니다. 안 좋은 이유는 목욕용 모래가 입자가 고와서 햄스터에 기관지에 들어가면 좋지 않다고 합니다. 사람도 마찬가지죠? </p>
-<p>우리 아라찌(햄스터)가 목욕용 모래에서 소변을 봤어요!!! 그것도 처음 데려온 날 말이죠. 저는 이 목욕용 모래가 마법의 가루라고 생각해요. 어떤 사람들은 이런 모래를 마약이라고 해요. 대소변 못가리는 햄스터들이 마법처럼 대소변을 가리게 된다고 해서요 ㅎㅎ</p>
-<br>
-
-<h2 id="먹이를-집으로-feat-아라찌"><a href="#먹이를-집으로-feat-아라찌" class="headerlink" title="먹이를 집으로 feat. 아라찌"></a>먹이를 집으로 feat. 아라찌</h2><p>이제 포스팅을 끝났어요 ㅎㅎ 햄스터를 처음 데려왔을 때 일주일 동안은 햄스터에게 관심을 가지면 안된다고 해요. 근데 너무 귀여워서… 어쩔수 없이 동영상을 찍어버렸어요.<br>마지막으로 아라찌가 먹이를 집으로 가져가는 모습을 볼까요? ㅎㅎ</p>
-<img src="/2019/09/16/HamsterBreddingDiary/hamster.gif" title="먹이를-집으로">
-
-<p>ㅎㅎ 귀엽죠? 원래 베딩위에 아라찌 집이 있었는데, 제가 잠든 사이에 베딩을 열심히 옮겨서 은식처를 베딩안으로 파묻었어요. 우리 아라찌가 집이 엄청 맘에 드나봐요. 근데 이렇게 아라찌가 굴속에서만 살면, 저는 언제 아라찌를 볼 수 있을까요? ㅠㅠㅠㅠ</p>
-<img src="/2019/09/16/HamsterBreddingDiary/bury-house.jpeg" title="파묻힌집">
-
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-          <div class="post-eof"></div>
-        
-      </footer>
-  </div>
-  
-  
-  
-  </article>
-
-    
   </div>
 
   
@@ -2148,7 +2077,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>DifferenceBetweenFarCallandNearCAll</title>
+      <link href="/2020/01/15/DifferenceBetweenFarCallandNearCAll/"/>
+      <url>/2020/01/15/DifferenceBetweenFarCallandNearCAll/</url>
+      
+        <content type="html"><![CDATA[<h1 id="FAR-CALL-NEAR-CALL"><a href="#FAR-CALL-NEAR-CALL" class="headerlink" title="FAR CALL, NEAR CALL ??"></a>FAR CALL, NEAR CALL ??</h1><p>프로그래밍에서 CALL 이란 서브루틴 또는 서브 프로그램에 프로그램의 실행을 넘기는 것 또는 그 조작을 위해서 사용되는 명령어로서 생각을 하면 됩니다.</p><p>세그먼트 영역이 생겨나면서, 코드, 데이터등을 분리시켜서, 샌드박스화를 시켰을 때, 현재 세그먼트 영역을 벗어난 JUMP, CALL 명령어를 하기 위해서 생겨난 개념이라고 합니다.</p><p>여기서 세그먼트란 프로그램이나 메모리의 부분을 말하며, 프로그램의 경우는 주기억에 탑재하는 단위를 세그먼트라고 생각하시면 됩니다. 메모리의 경우는 하나의 주소 레지스터로 지정되는 메모리 영역을 말합니다.</p><p><strong>세그먼트 외부의 세그먼트를 호추할 때는 FAR CALL</strong>을 사용하고, <strong>세그먼트 내부에서 호출 할 때는 NEAR CALL</strong>을 사용합니다.</p><h2 id="FAR-CALL-과-NEAR-CALL의-차이점"><a href="#FAR-CALL-과-NEAR-CALL의-차이점" class="headerlink" title="FAR CALL 과 NEAR CALL의 차이점"></a>FAR CALL 과 NEAR CALL의 차이점</h2><p>FAR CALL 과 NEAR CALL의 차이점은 CS(Code Segment Register)의 저장여부에 있습니다.</p><p>예를 들어, Kernel 구현시 CALL 0x0900:offset으로 넘기면, CS에 0x0900이 들어가게 됩니다. 그리고 CS에 들어간 주소가 복귀 주소가 되는데, 이 경우 FAR CALL을 뜻합니다. 반대로 CALL 0x0900 으로 하면 NEAR CALL을 뜻합니다.</p><p>즉, <strong>FAR CALL은 Stack에 CS:IP 값을 저장하고 지정된 곳으로 분기하는 상대 주소 지정 방식(Relative Address Mode)</strong> 입니다.</p><p>그리고 <strong>NEAR CALL은 Stack에 IP 값을 저장하고 지정된 곳으로 분기하는 간접 주소 지정 방식(Indirect Address Mode)</strong> 입니다.</p><br><h3 id="참고문헌"><a href="#참고문헌" class="headerlink" title="참고문헌"></a>참고문헌</h3><p>본 내용은 새한CLL아카데미(<a href="http://shcll.wo.to)에서" target="_blank" rel="noopener">http://shcll.wo.to)에서</a> 발췌했음을 알립니다.<br>[출처] Far Call, Near call 완전정복 (전자계산기 기사/산업기사) |작성자 ddaroapt</p><p><a href="https://m.blog.naver.com/PostView.nhn?blogId=eom913&amp;logNo=113939652&amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F" target="_blank" rel="noopener">https://m.blog.naver.com/PostView.nhn?blogId=eom913&amp;logNo=113939652&amp;proxyReferer=https%3A%2F%2Fwww.google.com%2F</a></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Windows </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>windows API Hooking - IAT hooking</title>
       <link href="/2020/01/14/WindowsAPIHookingUsingIAT/"/>
       <url>/2020/01/14/WindowsAPIHookingUsingIAT/</url>
