@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: 'Copy',
+      copy_success: 'Copied',
+      copy_failure: 'Copy failed'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="CreateToolhelp32Snapshot() API 와 EnumProcesses() API를 통해서 시스템에 실행 중인 모든 프로세스를 검색하는 방법을 정리했습니다. CreateToolhelp32Snapshot()CreateToolhelp32Snapshot() API를 이용해서 프로세스에서 사용되는 힙, 모듈, 및 스레드의 스냅샷을 찍어서 프로세스에 대">
+<meta name="keywords" content="Windows,Windows Reversing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ProcessSearch">
+<meta property="og:url" content="http://777bareman777.github.io/2020/01/16/ProcessSearch/index.html">
+<meta property="og:site_name" content="777bareman777 Blog">
+<meta property="og:description" content="CreateToolhelp32Snapshot() API 와 EnumProcesses() API를 통해서 시스템에 실행 중인 모든 프로세스를 검색하는 방법을 정리했습니다. CreateToolhelp32Snapshot()CreateToolhelp32Snapshot() API를 이용해서 프로세스에서 사용되는 힙, 모듈, 및 스레드의 스냅샷을 찍어서 프로세스에 대">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-01-16T19:03:37.937Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ProcessSearch">
+<meta name="twitter:description" content="CreateToolhelp32Snapshot() API 와 EnumProcesses() API를 통해서 시스템에 실행 중인 모든 프로세스를 검색하는 방법을 정리했습니다. CreateToolhelp32Snapshot()CreateToolhelp32Snapshot() API를 이용해서 프로세스에서 사용되는 힙, 모듈, 및 스레드의 스냅샷을 찍어서 프로세스에 대">
+  <link rel="canonical" href="http://777bareman777.github.io/2020/01/16/ProcessSearch/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>ProcessSearch | 777bareman777 Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">777bareman777 Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">켄넬 교육받은 댕댕이</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+  </ul>
+
+    
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://777bareman777.github.io/2020/01/16/ProcessSearch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="777bareman777">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="777bareman777 Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">ProcessSearch
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              
+                
+              
+
+              <time title="Created: 2020-01-16 21:10:50" itemprop="dateCreated datePublished" datetime="2020-01-16T21:10:50+09:00">2020-01-16</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-01-17 04:03:37" itemprop="dateModified" datetime="2020-01-17T04:03:37+09:00">2020-01-17</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Windows/" itemprop="url" rel="index"><span itemprop="name">Windows</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+        
+      
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/01/16/ProcessSearch/#comments" itemprop="discussionUrl"><span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/01/16/ProcessSearch/" itemprop="commentCount"></span></a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>CreateToolhelp32Snapshot() API 와 EnumProcesses() API를 통해서 시스템에 실행 중인 모든 프로세스를 검색하는 방법을 정리했습니다.</p>
+<h2 id="CreateToolhelp32Snapshot"><a href="#CreateToolhelp32Snapshot" class="headerlink" title="CreateToolhelp32Snapshot()"></a>CreateToolhelp32Snapshot()</h2><p>CreateToolhelp32Snapshot() API를 이용해서 프로세스에서 사용되는 힙, 모듈, 및 스레드의 스냅샷을 찍어서 프로세스에 대한 정보를 추출할 때 사용하는 함수입니다. 프로세스와 관련된 모든 부분을 검색할 수도 있고, 일부분만 검색 할 수도 있습니다.</p>
+<p>CreateToolhelp32Snapshot() API는 Tlhelp32.h 헤더 파일에 정의되어 있습니다. 정의는 다음과 같습니다.</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HANDLE CreateToolhelp32Snapshot(</span><br><span class="line">  DWORD dwFlags,</span><br><span class="line">  DWORD th32ProcessID</span><br><span class="line">)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>dwFlags</li>
+</ul>
+<p>dwFlags 파라미터는 스냅샷을 찍을 때 어떻게 찍을지를 정합니다. 시스템의 모든 프로세스와 스레드의 정보를 가져올지, 아니면 프로세스만 가져올지, 아니면 모듈만 가져올지, 아니면 스레드만 가져올지 그러한 것들을 지정할 수 있읍니다.</p>
+<p>해당 값에 자세한 정보는 <a href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot" target="_blank" rel="noopener">MSDN</a>에서 확인할 수 있습니다.</p>
+<ul>
+<li>th32ProcessID</li>
+</ul>
+<p>th32ProcessID 파라미터는 스냅샷에 포함될 프로세스의 식별자를 정합니다. 현재 프로세스를 나타낼 때는 NULL을 입력하면 됩니다. 만약에 TH32CS_SNAPHEAPLIST, TH32CS_SNAPMODULE, TH32CS_SNAPMODULE32, TH32CS_SNAPALL 값이 dwFlasgs 파라미터에 지정된 경우에는 th32ProcessID 파라미터를 사용하지만 그외의 경우에는 사용하지 않습니다.</p>
+<h3 id="예제"><a href="#예제" class="headerlink" title="예제"></a>예제</h3><p>CreateToolhelp32Snapshot() API를 사용해봅시다. 해당 API를 사용해서 얻고 싶은 정보에 따라서 Heap32First(), Heap32Next(), Module32First(), Module32Next(), Process32First(), Process32Next() 들중 한가지를 골라서 사용을 해야 합니다. 여기 있는 것만이 다가 아니고, MSDN에 들어가면 사용할 수 있는 API들이 더 있습니다.</p>
+<p>해당 예제에서는 Process에 대한 정보를 추출하고 싶은 것이기 때문에 <strong>Process32First() 와 Process32Next()</strong>를 선택했습니다.</p>
+<p>Process32First()와 Process32Next()의 구조체 정의는 다음과 같습니다.</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BOOL Process32First(</span><br><span class="line">  HANDLE           hSnapshot,</span><br><span class="line">  LPPROCESSENTRY32 lppe</span><br><span class="line">)<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">BOOL Process32Next(</span><br><span class="line">  HANDLE           hSnapshot,</span><br><span class="line">  LPPROCESSENTRY32 lppe</span><br><span class="line">)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<p>파라미터로 CreateToolhelp32Snapshot() 함수를 통해서 얻은 스냅샷 핸들과 PROCESSENTRY32 구조체의 주소를 넘겨주면 됩니다. Process32First()와 Process32Next() 통해서 얻을 수 있는 정보는 PROCESSENTRY32 라는 구조체에 들어있는 데이터입니다. PROCESSENTRY32 구조체에서는 실행 파일 이름, 프로세스 ID, 부모 프로세스 ID와 같은 프로세스 정보들을 얻을 수 있습니다.</p>
+<p>PROCESSENTRY32 구조체는 정의는 다음과 같습니다.</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">typedef struct tagPROCESSENTRY32 &#123;</span><br><span class="line">  <span class="type">DWORD</span>     dwSize;</span><br><span class="line">  <span class="type">DWORD</span>     cntUsage;</span><br><span class="line">  <span class="type">DWORD</span>     th32ProcessID;</span><br><span class="line">  <span class="type">ULONG_PTR</span> th32DefaultHeapID;</span><br><span class="line">  <span class="type">DWORD</span>     th32ModuleID;</span><br><span class="line">  <span class="type">DWORD</span>     cntThreads;</span><br><span class="line">  <span class="type">DWORD</span>     th32ParentProcessID;</span><br><span class="line">  <span class="type">LONG</span>      pcPriClassBase;</span><br><span class="line">  <span class="type">DWORD</span>     dwFlags;</span><br><span class="line">  <span class="type">CHAR</span>      szExeFile[<span class="type">MAX_PATH</span>];</span><br><span class="line">&#125; <span class="type">PROCESSENTRY32</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>dwSize</p>
+<p>  <strong>구조체의 크기입니다. Process32First 함수를 호출하기 전에 sizeof(PROCESSENTRY32)으로 초기화 시켜줘야합니다.</strong> 초기화 시키지 않으면 Process32First 함수 호출을 실패합니다.</p>
+</li>
+<li><p>cntUsage</p>
+<p>  이 멤버는 더 이상 사용하지 않으며 항상 0으로 설정됩니다.</p>
+</li>
+<li><p>th32ProcessID</p>
+<p>  프로세스 ID</p>
+</li>
+<li><p>th32DefaultHeapID</p>
+<p>  이 멤버는 더 이상 사용하지 않으며 항상 0으로 설정됩니다.</p>
+</li>
+<li><p>th32ModuleID</p>
+<p>  이 멤버는 더 이상 사용하지 않으며 항상 0으로 설정됩니다.</p>
+</li>
+<li><p>cntThreads</p>
+<p>  프로세스가 시작한 실행 스레드 개수</p>
+</li>
+<li><p>th32ParentProcessID</p>
+<p>  이 프로세스를 생성한 프로세스의 ID(부모 프로세스)</p>
+</li>
+<li><p>pcPriClassBase</p>
+<p>  이 프로세스에서 작성된 스레드의 기본 우선 순위</p>
+</li>
+<li><p>dwFlags</p>
+<p>  이 멤버는 더 이상 사용되지 않으며 항상 0으로 설정됩니다.</p>
+</li>
+<li><p>szExeFile</p>
+<p>  프로세스의 실행 파일 이름입니다. 실행 파일의 전체 경로를 검색하려면 Module32First 함수를 호출하고 리턴 되는 MODULEENTRY32 구조 의 szExePath 멤버를 확인하십시오 . 그러나 호출 프로세스가 32 비트 프로세스 인 경우 QueryFullProcessImageName 함수를 호출하여 64 비트 프로세스에 대한 실행 파일의 전체 경로를 검색 해야합니다.</p>
+</li>
+</ul>
+<br>
+
+<h4 id="소스코드"><a href="#소스코드" class="headerlink" title="소스코드"></a>소스코드</h4><p>이렇게 CreateToolhelp32Snapshot() API, Process32First() API, Process32Next() API를 적절하게 사용하면 프로세스 ID와 프로세스 이름을 구할 수 있습니다. 아래의 코드는 프로세스 ID와 프로세스 이름을 구하는 소스코드 입니다.</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"stdio.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"windows.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"tlhelp32.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"tchar.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">int</span> main(<span class="built_in">int</span> argc, char* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	HANDLE				hSnapShot<span class="comment">;</span></span><br><span class="line">	PROCESSENTRY32		pe<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">	pe.dwSize = sizeof(PROCESSENTRY32)<span class="comment">;</span></span><br><span class="line">	hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPALL, <span class="literal">NULL</span>)<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">	Process32First(hSnapShot, &amp;pe)<span class="comment">;</span></span><br><span class="line">	<span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		_tprintf(_T(<span class="string">"PID: %u  \tProcess Name : %s\n"</span>), pe.th32ProcessID, pe.szExeFile)<span class="comment">;</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (!Process32Next(hSnapShot, &amp;pe))</span><br><span class="line">		&#123;</span><br><span class="line">			CloseHandle(hSnapShot)<span class="comment">;</span></span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span><span class="comment">;</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="EnumProcesses"><a href="#EnumProcesses" class="headerlink" title="EnumProcesses()"></a>EnumProcesses()</h2><p>EnumProcesses() API 이용해서 프로세스 ID의 정보를 얻어낼 수 있습니다. 이를 통해서 프로세스의 정보를 알아낼 수 있습니다.</p>
+<p>EnumProcesses() API는 Psapi.h 헤더 파일에 정의되어 있습니다. 정의는 다음과 같습니다.</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BOOL </span>EnumProcesses(</span><br><span class="line">  DWORD   *lpidProcess,</span><br><span class="line">  DWORD   cb,</span><br><span class="line">  LPDWORD lpcbNeeded</span><br><span class="line">)<span class="comment">;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>lpidProcess</li>
+</ul>
+<p>lpidProcess 파라미터는 프로세스 ID 목록을 받는 배열에 대한 포인터를 지정하면 됩니다.</p>
+<ul>
+<li>cb</li>
+</ul>
+<p>lpidProcess 배열의 크기를 지정하면 됩니다.</p>
+<ul>
+<li>lpcbNeeded</li>
+</ul>
+<p>lpidProcess 배열에 반환된 바이트 수입니다.</p>
+<br>
+
+<p>EnumProcess() API를 호출 할 때 얼마나 많은 프로세스가 있을지 예측하기 어렵기 때문에 큰 배열을 사용해서 프로세스의 ID를 구하는 것이 바람직합니다.</p>
+<p>프로세스 목록을 확인하려면 lpcbNeeded 파라미터에 입력된 변수의 값을 sizeof(DWORD)로 나누면 프로세스의 개수를 얻을 수 있습니다. 만약에 버퍼가 작아서 모든 프로세스를 식별을 하지 못했다면, 더 큰 배열로 다시 시도하면 됩니다.</p>
+<p>배열에는 함수의 프로세스의 ID를 얻었으면, 프로세스 ID가 들어가게 됩니다. 배열안에 프로세스 ID가 있다는 것을 확인했으면, OpenProcess 함수를 호출해서 프로세스 핸들을 얻고, 프로세스의 정보를 추출하면 됩니다.<br>프로세스 정보를 추출할 수 있는 API들은 <a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/" target="_blank" rel="noopener">psapi.h 헤더 파일</a>을 참고 하시면 됩니다. </p>
+<br>
+
+<h3 id="예제-1"><a href="#예제-1" class="headerlink" title="예제"></a>예제</h3><p>이때, 프로세스의 이름을 얻기 위해 사용된 API는 EnumProcessModules() 과 GetModuleBaseName() 입니다. <a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodules" target="_blank" rel="noopener">EnumProcessModule()</a>을 이용해서 프로세스에서 사용되는 모듈 핸들을 얻고, <a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-getmodulebasenamea" target="_blank" rel="noopener">GetModuleBaseName()</a>을 이용해서 프로세스 이름을 얻는 방식입니다. 자세한 정보는 MSDN에서 검색하면 됩니다.</p>
+<h4 id="소스코드-1"><a href="#소스코드-1" class="headerlink" title="소스코드"></a>소스코드</h4><p>아래의 코드는 EnumProcesses() API, EnumProcessModule() API, GetModuleBaseName() API를 이용해서 프로세스의 ID와 프로세스 이름을 얻는 소스 코드입니다. 해당 코드는 MSDN의 <a href="https://docs.microsoft.com/ko-kr/windows/win32/psapi/enumerating-all-processes?redirectedfrom=MSDN" target="_blank" rel="noopener">예제 소스 코드</a>입니다.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdio.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"windows.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"tchar.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"psapi.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ProcessSearch</span><span class="params">(DWORD dwPID)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	TCHAR szProcName[MAX_PATH] = _T(<span class="string">"&lt;unknown&gt;"</span>);</span><br><span class="line">	HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwPID);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (<span class="literal">NULL</span> != hProcess)</span><br><span class="line">	&#123;</span><br><span class="line">		HMODULE hMod;</span><br><span class="line">		DWORD cbNeeded;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (EnumProcessModules(hProcess, &amp;hMod, <span class="keyword">sizeof</span>(hMod), &amp;cbNeeded))</span><br><span class="line">		&#123;</span><br><span class="line">			GetModuleBaseName(hProcess, hMod, szProcName, <span class="keyword">sizeof</span>(szProcName) / <span class="keyword">sizeof</span>(TCHAR));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	_tprintf(_T(<span class="string">"PID: %u  \tProcess Name : %s\n"</span>), dwPID, szProcName);</span><br><span class="line"></span><br><span class="line">	CloseHandle(hProcess);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	DWORD Processes[<span class="number">1024</span>], cbNeeded, cProcesses;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!EnumProcesses(Processes, <span class="keyword">sizeof</span>(Processes), &amp;cbNeeded))</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	cProcesses = cbNeeded / <span class="keyword">sizeof</span>(DWORD);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; cProcesses; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (Processes[i] != <span class="number">0</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			ProcessSearch(Processes[i]);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<br>
+
+<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><p><a href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/nf-tlhelp32-createtoolhelp32snapshot" target="_blank" rel="noopener">CreateToolhelp32Snapshot()</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/tlhelp32/ns-tlhelp32-processentry32" target="_blank" rel="noopener">PROCESSENTRY32 구조체</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocesses" target="_blank" rel="noopener">EnumProcess()</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodules" target="_blank" rel="noopener">EnumProcessModule()</a></p>
+<p><a href="https://docs.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-getmodulebasenamea" target="_blank" rel="noopener">GetModuleBaseName()</a></p>
+<p><a href="https://docs.microsoft.com/ko-kr/windows/win32/psapi/enumerating-all-processes?redirectedfrom=MSDN" target="_blank" rel="noopener">Process Search using EnumProcess</a></p>
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/Windows/" rel="tag"># Windows</a>
+            
+              <a href="/tags/Windows-Reversing/" rel="tag"># Windows Reversing</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/01/16/WindowsAPIHookingStealthProcess-1/" rel="next" title="스텔스 프로세스, 코드 패치 기법을 이용해서 -1">
+                  <i class="fa fa-chevron-left"></i> 스텔스 프로세스, 코드 패치 기법을 이용해서 -1
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2020/01/16/HowToUsePragma/" rel="prev" title="HowToUsePragma">
+                  HowToUsePragma <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    
+  <div class="comments" id="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CreateToolhelp32Snapshot"><span class="nav-number">1.</span> <span class="nav-text">CreateToolhelp32Snapshot()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#예제"><span class="nav-number">1.1.</span> <span class="nav-text">예제</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#소스코드"><span class="nav-number">1.1.1.</span> <span class="nav-text">소스코드</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EnumProcesses"><span class="nav-number">2.</span> <span class="nav-text">EnumProcesses()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#예제-1"><span class="nav-number">2.1.</span> <span class="nav-text">예제</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#소스코드-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">소스코드</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고자료"><span class="nav-number">3.</span> <span class="nav-text">참고자료</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">777bareman777</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span>
+        </a>
+      </div>
+    
+  </nav>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">777bareman777</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/muse.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://777bareman777.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  function disqus_config() {
+    this.page.url = "http://777bareman777.github.io/2020/01/16/ProcessSearch/";
+    this.page.identifier = "2020/01/16/ProcessSearch/";
+    this.page.title = 'ProcessSearch';};
+  function loadComments() {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://777bareman777.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  }
+    window.addEventListener('load', loadComments, false);
+  
+</script>
+
+</body>
+</html>

@@ -64,7 +64,7 @@
 <meta property="og:description" content="일명 나뭇잎 책이라고 불리는 리버싱 핵심 원리 책을 보면서, 배운 내용을 정리하는 포스팅입니다. 해당 포스팅에서는 API 후킹 방법중 하나인 코드 패치 내용 정리입니다.   API 코드 패치API 코드 패치 기법은 프로세스 메모리에 로딩된 라이브러리 이미지에서 후킹을 원하는 API 코드 자체를 수정하는 방법을 말합니다. 이 기법은 API 후킹에서 널리 사용">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://777bareman777.github.io/2020/01/15/WindowsAPIHookingUsingCodePatch/1.png">
-<meta property="og:updated_time" content="2020-01-16T08:51:13.538Z">
+<meta property="og:updated_time" content="2020-01-16T11:49:56.269Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Windows API Hooking - Code Patch">
 <meta name="twitter:description" content="일명 나뭇잎 책이라고 불리는 리버싱 핵심 원리 책을 보면서, 배운 내용을 정리하는 포스팅입니다. 해당 포스팅에서는 API 후킹 방법중 하나인 코드 패치 내용 정리입니다.   API 코드 패치API 코드 패치 기법은 프로세스 메모리에 로딩된 라이브러리 이미지에서 후킹을 원하는 API 코드 자체를 수정하는 방법을 말합니다. 이 기법은 API 후킹에서 널리 사용">
@@ -272,7 +272,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-16 17:51:13" itemprop="dateModified" datetime="2020-01-16T17:51:13+09:00">2020-01-16</time>
+                <time title="Modified: 2020-01-16 20:49:56" itemprop="dateModified" datetime="2020-01-16T20:49:56+09:00">2020-01-16</time>
               </span>
             
           
@@ -393,18 +393,112 @@
 
 <br>
 
-<h3 id="전체-소스-코드"><a href="#전체-소스-코드" class="headerlink" title="전체 소스 코드"></a>전체 소스 코드</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Windows.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdio.h"</span></span></span><br><span class="line"></span><br><span class="line">BYTE g_pOrgBytes[<span class="number">5</span>] = &#123; <span class="number">0</span>, &#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">hook</span><span class="params">(LPCSTR szDllName, LPCSTR szFuncName, PROC pfnNew, PBYTE pOrgBytes)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	FARPROC pfnOrg;</span><br><span class="line">	DWORD dwOldProtect, dwAddress;</span><br><span class="line">	BYTE pBuf[<span class="number">5</span>] = &#123; <span class="number">0xE9</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span> &#125;;</span><br><span class="line">	PBYTE pByte;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 후킹 대상 API 주소를 구한다</span></span><br><span class="line">	pfnOrg = (FARPROC)GetProcAddress(GetModuleHandleA(szDllName), szFuncName);</span><br><span class="line">	pByte = (PBYTE)pfnOrg;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 만약 이미 후킹되어 있다면 return FALSE</span></span><br><span class="line">	<span class="keyword">if</span> (pByte[<span class="number">0</span>] == <span class="number">0xE9</span>)</span><br><span class="line">		<span class="keyword">return</span> FALSE;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 5바이트 패치를 위하여 메모리에 WRITE 속성 추가</span></span><br><span class="line">	VirtualProtect((LPVOID)pfnOrg, <span class="number">5</span>, PAGE_EXECUTE_READWRITE, &amp;dwOldProtect);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 원본코드(5바이트) 백업</span></span><br><span class="line">	<span class="built_in">memcpy</span>(pOrgBytes, pfnOrg, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// JMP 주소 계산(E9 XXXXXXXX)</span></span><br><span class="line">	<span class="comment">// XXXXXXXX = (DWORD)pfnNew - (DWORD)pfnOrg - 5;</span></span><br><span class="line">	dwAddress = (DWORD)pfnNew - (DWORD)pfnOrg - <span class="number">5</span>;</span><br><span class="line">	<span class="built_in">memcpy</span>(&amp;pBuf[<span class="number">1</span>], &amp;dwAddress, <span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Hook: 5바이트 패치(JMP XXXXXXXX)</span></span><br><span class="line">	<span class="built_in">memcpy</span>(pfnOrg, pBuf, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 메모리 속성 복원</span></span><br><span class="line">	VirtualProtect((LPVOID)pfnOrg, <span class="number">5</span>, dwOldProtect, &amp;dwOldProtect);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">unhook</span><span class="params">(LPCSTR szDllName, LPCSTR szFuncName, PBYTE pOrgBytes)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	FARPROC pFunc;</span><br><span class="line">	DWORD dwOldProtect;</span><br><span class="line">	PBYTE pByte;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// API 주소를 구한다 </span></span><br><span class="line">	pFunc = GetProcAddress(GetModuleHandleA(szDllName), szFuncName);</span><br><span class="line">	pByte = (PBYTE)pFunc;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 만약 이미 언후킹 되어있다면 return FALSE</span></span><br><span class="line">	<span class="keyword">if</span> (pByte[<span class="number">0</span>] != <span class="number">0xE9</span>)</span><br><span class="line">		<span class="keyword">return</span> FALSE;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 원래 코드(5바이트) 패치를 하기 위해서 메모리에 Write 속성 추가</span></span><br><span class="line">	VirtualProtect((LPVOID)pFunc, <span class="number">5</span>, PAGE_EXECUTE_READWRITE, &amp;dwOldProtect);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// unhook</span></span><br><span class="line">	<span class="built_in">memcpy</span>(pFunc, g_pOrgBytes, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 메모리 속성 복원</span></span><br><span class="line">	VirtualProtect((LPVOID)pFunc, <span class="number">5</span>, dwOldProtect, &amp;dwOldProtect);</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> WINAPI <span class="title">MyExitProcess</span><span class="params">(UINT uExitCode)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	MessageBoxA(<span class="literal">NULL</span>, <span class="string">"API hooking - code patch"</span>, <span class="string">"hook"</span>, MB_OK);</span><br><span class="line">	unhook(<span class="string">"kernel32.dll"</span>, <span class="string">"ExitProcess"</span>, g_pOrgBytes);</span><br><span class="line">	ExitProcess(uExitCode);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL WINAPI <span class="title">DllMain</span><span class="params">(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">switch</span> (fdwReason)</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">		hook(<span class="string">"kernel32.dll"</span>, <span class="string">"ExitProcess"</span>, (PROC)MyExitProcess, g_pOrgBytes);</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">		unhook(<span class="string">"kernel32.dll"</span>, <span class="string">"ExitProcess"</span>, g_pOrgBytes);</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="전체-소스-코드"><a href="#전체-소스-코드" class="headerlink" title="전체 소스 코드"></a>전체 소스 코드</h3><pre><code>#include &quot;Windows.h&quot;
+#include &quot;stdio.h&quot;
 
-<h2 id="참고자료"><a href="#참고자료" class="headerlink" title="참고자료"></a>참고자료</h2><p><a href="https://www.felixcloutier.com/x86/call" target="_blank" rel="noopener">CALL - Call Procedure</a></p>
-<p><a href="https://www.felixcloutier.com/x86/jmp" target="_blank" rel="noopener">JMP - Jump</a></p>
-<p><a href="https://eram.tistory.com/entry/API-Hooking-x86?category=564239" target="_blank" rel="noopener">API Hooking x86 x64</a></p>
-<p><a href="https://shhoya.github.io/2019/03/27/64bitHook.html" target="_blank" rel="noopener">x64 Hooking</a></p>
-<p><a href="https://5kyc1ad.tistory.com/354" target="_blank" rel="noopener">x86, x64 API HOOKING</a></p>
-<p><a href="https://www.sysnet.pe.kr/2/0/1231" target="_blank" rel="noopener">Win32 API 후킹 - Trampoline API Hooking</a></p>
-<p><a href="https://ezbeat.tistory.com/453" target="_blank" rel="noopener">Windows x64 binary 모듈 단위 이동</a></p>
-<p><a href="http://sandsprite.com/blogs/index.php?uid=7&pid=235" target="_blank" rel="noopener">x64 Hooks</a></p>
-<p><a href="https://rayanfam.com/topics/assembly-challenge-jump-to-a-non-relative-address-without-using-registers/" target="_blank" rel="noopener">Assembly Challenge : Jump to a non-relative address without using registers</a></p>
+BYTE g_pOrgBytes[5] = { 0, };
 
+BOOL hook(LPCSTR szDllName, LPCSTR szFuncName, PROC pfnNew, PBYTE pOrgBytes)
+{
+    FARPROC pfnOrg;
+    DWORD dwOldProtect, dwAddress;
+    BYTE pBuf[5] = { 0xE9, 0x00, 0x00, 0x00, 0x00 };
+    PBYTE pByte;
+
+    // 후킹 대상 API 주소를 구한다
+    pfnOrg = (FARPROC)GetProcAddress(GetModuleHandleA(szDllName), szFuncName);
+    pByte = (PBYTE)pfnOrg;
+
+    // 만약 이미 후킹되어 있다면 return FALSE
+    if (pByte[0] == 0xE9)
+        return FALSE;
+
+    // 5바이트 패치를 위하여 메모리에 WRITE 속성 추가
+    VirtualProtect((LPVOID)pfnOrg, 5, PAGE_EXECUTE_READWRITE, &amp;dwOldProtect);
+
+    // 원본코드(5바이트) 백업
+    memcpy(pOrgBytes, pfnOrg, 5);
+
+    // JMP 주소 계산(E9 XXXXXXXX)
+    // XXXXXXXX = (DWORD)pfnNew - (DWORD)pfnOrg - 5;
+    dwAddress = (DWORD)pfnNew - (DWORD)pfnOrg - 5;
+    memcpy(&amp;pBuf[1], &amp;dwAddress, 4);
+
+    // Hook: 5바이트 패치(JMP XXXXXXXX)
+    memcpy(pfnOrg, pBuf, 5);
+
+    // 메모리 속성 복원
+    VirtualProtect((LPVOID)pfnOrg, 5, dwOldProtect, &amp;dwOldProtect);
+
+    return TRUE;
+}
+
+BOOL unhook(LPCSTR szDllName, LPCSTR szFuncName, PBYTE pOrgBytes)
+{
+    FARPROC pFunc;
+    DWORD dwOldProtect;
+    PBYTE pByte;
+
+    // API 주소를 구한다 
+    pFunc = GetProcAddress(GetModuleHandleA(szDllName), szFuncName);
+    pByte = (PBYTE)pFunc;
+
+    // 만약 이미 언후킹 되어있다면 return FALSE
+    if (pByte[0] != 0xE9)
+        return FALSE;
+
+    // 원래 코드(5바이트) 패치를 하기 위해서 메모리에 Write 속성 추가
+    VirtualProtect((LPVOID)pFunc, 5, PAGE_EXECUTE_READWRITE, &amp;dwOldProtect);
+
+    // unhook
+    memcpy(pFunc, g_pOrgBytes, 5);
+
+    // 메모리 속성 복원
+    VirtualProtect((LPVOID)pFunc, 5, dwOldProtect, &amp;dwOldProtect);
+
+}
+
+
+void WINAPI MyExitProcess(UINT uExitCode)
+{
+    MessageBoxA(NULL, &quot;API hooking - code patch&quot;, &quot;hook&quot;, MB_OK);
+    unhook(&quot;kernel32.dll&quot;, &quot;ExitProcess&quot;, g_pOrgBytes);
+    ExitProcess(uExitCode);
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+    switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+        hook(&quot;kernel32.dll&quot;, &quot;ExitProcess&quot;, (PROC)MyExitProcess, g_pOrgBytes);
+        break;
+    case DLL_PROCESS_DETACH:
+        unhook(&quot;kernel32.dll&quot;, &quot;ExitProcess&quot;, g_pOrgBytes);
+        break;
+    }
+    return TRUE;
+}
+
+## 참고자료
+
+[CALL - Call Procedure](https://www.felixcloutier.com/x86/call)
+
+[JMP - Jump](https://www.felixcloutier.com/x86/jmp)
+
+[API Hooking x86 x64](https://eram.tistory.com/entry/API-Hooking-x86?category=564239)
+
+[x64 Hooking](https://shhoya.github.io/2019/03/27/64bitHook.html)
+
+[x86, x64 API HOOKING](https://5kyc1ad.tistory.com/354)
+
+[Win32 API 후킹 - Trampoline API Hooking](https://www.sysnet.pe.kr/2/0/1231)
+
+[Windows x64 binary 모듈 단위 이동](https://ezbeat.tistory.com/453)
+
+[x64 Hooks](http://sandsprite.com/blogs/index.php?uid=7&amp;pid=235)
+
+[Assembly Challenge : Jump to a non-relative address without using registers](https://rayanfam.com/topics/assembly-challenge-jump-to-a-non-relative-address-without-using-registers/)</code></pre>
     </div>
 
     
@@ -499,7 +593,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#API-코드-패치"><span class="nav-number">1.</span> <span class="nav-text">API 코드 패치</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API-코드-패치-동작-원리"><span class="nav-number">2.</span> <span class="nav-text">API 코드 패치 동작 원리</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#분석"><span class="nav-number">3.</span> <span class="nav-text">분석</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DllMain"><span class="nav-number">3.1.</span> <span class="nav-text">DllMain()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyExitProcess-후킹-함수-구현"><span class="nav-number">3.2.</span> <span class="nav-text">MyExitProcess 후킹 함수 구현</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#후킹-로직-구현"><span class="nav-number">3.3.</span> <span class="nav-text">후킹 로직 구현</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#언훅-동작-원리"><span class="nav-number">3.4.</span> <span class="nav-text">언훅 동작 원리</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#실행"><span class="nav-number">3.5.</span> <span class="nav-text">실행</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#전체-소스-코드"><span class="nav-number">3.6.</span> <span class="nav-text">전체 소스 코드</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#참고자료"><span class="nav-number">4.</span> <span class="nav-text">참고자료</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#API-코드-패치"><span class="nav-number">1.</span> <span class="nav-text">API 코드 패치</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#API-코드-패치-동작-원리"><span class="nav-number">2.</span> <span class="nav-text">API 코드 패치 동작 원리</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#분석"><span class="nav-number">3.</span> <span class="nav-text">분석</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DllMain"><span class="nav-number">3.1.</span> <span class="nav-text">DllMain()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyExitProcess-후킹-함수-구현"><span class="nav-number">3.2.</span> <span class="nav-text">MyExitProcess 후킹 함수 구현</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#후킹-로직-구현"><span class="nav-number">3.3.</span> <span class="nav-text">후킹 로직 구현</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#언훅-동작-원리"><span class="nav-number">3.4.</span> <span class="nav-text">언훅 동작 원리</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#실행"><span class="nav-number">3.5.</span> <span class="nav-text">실행</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#전체-소스-코드"><span class="nav-number">3.6.</span> <span class="nav-text">전체 소스 코드</span></a></li></ol></li></ol></div>
         
       </div>
       <!--/noindex-->
@@ -514,7 +608,7 @@
         
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -527,7 +621,7 @@
             <a href="/categories/">
           
         
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">categories</span>
         </a>
       </div>
@@ -540,7 +634,7 @@
             <a href="/tags/">
           
         
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">tags</span>
         </a>
       </div>
