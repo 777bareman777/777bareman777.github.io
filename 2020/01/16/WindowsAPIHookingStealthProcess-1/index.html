@@ -65,7 +65,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://777bareman777.github.io/2020/01/16/WindowsAPIHookingStealthProcess-1/1.png">
 <meta property="og:image" content="http://777bareman777.github.io/2020/01/16/WindowsAPIHookingStealthProcess-1/2.png">
-<meta property="og:updated_time" content="2020-01-16T21:57:50.791Z">
+<meta property="og:updated_time" content="2020-01-16T22:14:46.262Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="스텔스 프로세스, 코드 패치 기법을 이용해서 -1">
 <meta name="twitter:description" content="일명 나뭇잎 책이라고 불리는 리버싱 핵심 원리 책을 보면서, 배운 내용을 정리하는 포스팅입니다. 해당 포스팅에서는 API 후킹 방법을 이용해서 유저 모드에서 StealthProcess를 만드는 기법을 배웁니다.   들어가기에 앞서스텔스 프로세스를 만드는 방법을 알기전에 API 후킹 방법중 코드 패치를 이용하는 방식에 대해 알아야 합니다. 핵심 부분을 말하자">
@@ -273,7 +273,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-17 06:57:50" itemprop="dateModified" datetime="2020-01-17T06:57:50+09:00">2020-01-17</time>
+                <time title="Modified: 2020-01-17 07:14:46" itemprop="dateModified" datetime="2020-01-17T07:14:46+09:00">2020-01-17</time>
               </span>
             
           
@@ -320,7 +320,7 @@
 <p>해당 포스팅에서는 API 후킹 방법을 이용해서 유저 모드에서 StealthProcess를 만드는 기법을 배웁니다.</p>
 <br>
 
-<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><p>스텔스 프로세스를 만드는 방법을 알기전에 API 후킹 방법중 코드 패치를 이용하는 방식에 대해 알아야 합니다. 핵심 부분을 말하자면 프로세스 메모리에 로딩된 라이브러리 이미지에서 후킹을 원하는 API 코드를 수정하는 방법입니다. 해당 내용에 대해 더 자세히 알고 싶다면, <a href="../15/WindowsAPIHookingUsingCodePatch">Windows API Hooking - Code Patch</a> 참고하시면 됩니다.</p>
+<h2 id="들어가기에-앞서"><a href="#들어가기에-앞서" class="headerlink" title="들어가기에 앞서"></a>들어가기에 앞서</h2><p>스텔스 프로세스를 만드는 방법을 알기전에 API 후킹 방법중 코드 패치를 이용하는 방식에 대해 알아야 합니다. 핵심 부분을 말하자면 프로세스 메모리에 로딩된 라이브러리 이미지에서 후킹을 원하는 API 코드를 수정하는 방법입니다. 해당 내용에 대해 더 자세히 알고 싶다면, <a href="../../15/WindowsAPIHookingUsingCodePatch">Windows API Hooking - Code Patch</a> 참고하시면 됩니다.</p>
 <br>
 
 <h2 id="스텔스-프로세스"><a href="#스텔스-프로세스" class="headerlink" title="스텔스 프로세스"></a>스텔스 프로세스</h2><p>특정 프로세스를 은폐시키기 위해서는 다른 모든 프로세스의 메모리에 침투하여 API를 후킹하는 것이 유저 모드에서 구현 가능한 스텔스 프로세스라고 합니다. 작업 대상은 자기 자신이 아니라 다른 프로세스입니다.</p>
@@ -401,7 +401,7 @@
 <figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x00007FFF</span> <span class="number">00000001</span> <span class="string">'FF 25 00000000'</span> <span class="keyword">JMP</span> <span class="built_in">QWORD</span> <span class="built_in">PTR</span> <span class="built_in">ds</span>:[7FFF00000007] # <span class="keyword">JMP</span> <span class="built_in">QWORD</span> <span class="built_in">PTR</span> [<span class="built_in">RIP</span>+addr0]</span><br><span class="line"><span class="number">0x00007FFF</span> <span class="number">00000007</span> <span class="string">'XXXXXXXX XXXXXXXX'</span> # 후킹 함수 주소</span><br></pre></td></tr></table></figure>
 
 <p>FF25로 시작하는 JMP 명령어는 레지스터 RIP + offset(XXXXXXXX)을 더한 주소로 이동하는 방식입니다. 이를 통해서 RIP+offset(XXXXXXXX) 주소에다가 후킹 함수 주소를 넣음으로써, 후킹 함수로 이동하게 되는 테크닉입니다.</p>
-<p>이외에도 여러가지 방법이 존재하는데, 다른 방법은 <a href="../15/WindowsX64Hooking">WindowsX64Hooking</a> 글을 참고하면 됩니다.</p>
+<p>이외에도 여러가지 방법이 존재하는데, 다른 방법은 <a href="../../15/WindowsX64Hooking">WindowsX64Hooking</a> 글을 참고하면 됩니다.</p>
 <br>
 
 <h5 id="unhook-by-code"><a href="#unhook-by-code" class="headerlink" title="unhook_by_code()"></a>unhook_by_code()</h5><p>다음은 후킹을 해제하는 unhook_by_code() 함수입니다.</p>
