@@ -65,7 +65,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="http://777bareman777.github.io/2020/01/16/WindowsAPIHookingStealthProcess-1/1.png">
 <meta property="og:image" content="http://777bareman777.github.io/2020/01/16/WindowsAPIHookingStealthProcess-1/2.png">
-<meta property="og:updated_time" content="2020-01-16T22:37:16.212Z">
+<meta property="og:updated_time" content="2020-01-16T22:39:26.475Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="스텔스 프로세스, 코드 패치 기법을 이용해서 -1">
 <meta name="twitter:description" content="일명 나뭇잎 책이라고 불리는 리버싱 핵심 원리 책을 보면서, 배운 내용을 정리하는 포스팅입니다. 해당 포스팅에서는 API 후킹 방법을 이용해서 유저 모드에서 StealthProcess를 만드는 기법을 배웁니다.   들어가기에 앞서스텔스 프로세스를 만드는 방법을 알기전에 API 후킹 방법중 코드 패치를 이용하는 방식에 대해 알아야 합니다. 핵심 부분을 말하자">
@@ -273,7 +273,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-17 07:37:16" itemprop="dateModified" datetime="2020-01-17T07:37:16+09:00">2020-01-17</time>
+                <time title="Modified: 2020-01-17 07:39:26" itemprop="dateModified" datetime="2020-01-17T07:39:26+09:00">2020-01-17</time>
               </span>
             
           
@@ -385,7 +385,7 @@
 <p>#pragma comment() 전처리 구문을 통해서는 여러가지 일을 할 수 있습니다. 서브시스템을 설정한다거나 섹션을 설정한다거나 명시적으로 라이브러리를 링크한다거나 등을 할 수 있습니다. 프로젝트 관리에 들어가서 설정을 통해서 할 수 있는 부분들을 #pragma comment()를 통해서 편하게 설정을 할 수 있게 한 것입니다.</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(linker, <span class="meta-string">"/SECTION:.SHARE,RWS"</span>)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> data_seg(<span class="meta-string">".SHARE"</span>)</span></span><br><span class="line">	TCHAR g_szProcName[MAX_PATH] = &#123; <span class="number">0</span>, &#125;;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> data_seg()</span></span><br></pre></td></tr></table></figure>
 
-<p>다음 부분은 export 함수를 만드는 부분입니다. C++과 C는 네임맹글링(Name Mangling) 많은 차이가 있습니다. C언어의 네임맹글링은 <em>cdecl 방식으로 컴파일 되었을 경우 단순히 함수 이름 앞에 ‘</em>‘를 붙여주거나, <em>stdcall 방식으로 컴파일 되었을 경우 함수 이름 앞에 ‘</em>‘을 붙여주고 함수 이름 마지막에 “@ordinal”을 붙여주는 방식으로 컴파일이 됩니다. 그에 반면 C++은 컴파일마다 네임맹글링 하는 방식이 다르며, 네임맹글링 하는 방식이 다르면 DLL을 만들 때, 링킹을 할 수 없는 상황이 벌어지기도 합니다. 따라서 C++을 이용해서 DLL을 만들었다고 하더라도 C module과 C++ module의 호환성을 위해서 extern “C” 키워를 사용을 하는 것입니다.</p>
+<p>다음 부분은 export 함수를 만드는 부분입니다. C++과 C는 네임맹글링(Name Mangling) 많은 차이가 있습니다. C언어의 네임맹글링은 _cdecl 방식으로 컴파일 되었을 경우 단순히 함수 이름 앞에 “언더바”를 붙여주거나, _stdcall 방식으로 컴파일 되었을 경우 함수 이름 앞에 “언더바”을 붙여주고 함수 이름 마지막에 “@ordinal”을 붙여주는 방식으로 컴파일이 됩니다. 그에 반면 C++은 컴파일마다 네임맹글링 하는 방식이 다르며, 네임맹글링 하는 방식이 다르면 DLL을 만들 때, 링킹을 할 수 없는 상황이 벌어지기도 합니다. 따라서 C++을 이용해서 DLL을 만들었다고 하더라도 C module과 C++ module의 호환성을 위해서 extern “C” 키워를 사용을 하는 것입니다.</p>
 <p>해당 관련 문서는 <a href="https://blueskywithyou.tistory.com/48" target="_blank" rel="noopener">이곳</a>을 찾아보면 된다. </p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">__declspec(dllexport) <span class="function"><span class="keyword">void</span> <span class="title">SetProcName</span><span class="params">(LPCTSTR szProcName)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	_tcscpy_s(g_szProcName, szProcName);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
 
