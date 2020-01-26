@@ -63,7 +63,7 @@
 <meta property="og:site_name" content="777bareman777 Blog">
 <meta property="og:description" content="이번 포스팅에서는 Intel사의 X86 processor의 함수 호출 규약에 대해 알아볼 것입니다.   함수 호출 규약함수 호출 규약은 컴퓨터에서 함수를 호출하고, 함수를 구현하기 위해서 정한 표준 규약이라고 보면 됩니다. 이러한 함수 호출 규약을 통해서 컴파일러가 어떻게 서브루틴(호출된 함수)에 접근할지를 정하게 됩니다 함수 호출 규약은 어떻게 만드냐에">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2020-01-26T19:25:15.807Z">
+<meta property="og:updated_time" content="2020-01-26T19:29:21.824Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="함수 호출 규약 x86">
 <meta name="twitter:description" content="이번 포스팅에서는 Intel사의 X86 processor의 함수 호출 규약에 대해 알아볼 것입니다.   함수 호출 규약함수 호출 규약은 컴퓨터에서 함수를 호출하고, 함수를 구현하기 위해서 정한 표준 규약이라고 보면 됩니다. 이러한 함수 호출 규약을 통해서 컴파일러가 어떻게 서브루틴(호출된 함수)에 접근할지를 정하게 됩니다 함수 호출 규약은 어떻게 만드냐에">
@@ -270,7 +270,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-01-27 04:25:15" itemprop="dateModified" datetime="2020-01-27T04:25:15+09:00">2020-01-27</time>
+                <time title="Modified: 2020-01-27 04:29:21" itemprop="dateModified" datetime="2020-01-27T04:29:21+09:00">2020-01-27</time>
               </span>
             
           
@@ -394,7 +394,7 @@
 </ul>
 <br>
 
-<h3 id="FASTCALL-호출-규약"><a href="#FASTCALL-호출-규약" class="headerlink" title="FASTCALL 호출 규약"></a>FASTCALL 호출 규약</h3><p>FASTCALL 호출 규약은 모든 컴파일러에서 표준 규약이 아니기 때문에 조심해서 사용해야 합니다. 함수를 정의할 때, 일반적으로 몇개의 파라미터는 레지스터를 통해서 전달되고, 나머지는 STDCALL 호출 규약처럼 오른쪽에서 왼쪽순으로 스택을 이용해서 전달됩니다. 따라서 파라미터에 수에 따라서 호출된 쪽(The called function)에서 스택을 정리할 때도 있습니다. 파라미터가 레지스터를 이용해서 전달되기 떄문에 속도가 빠르다라는 특징 이외에는 STDCALL의 특징과 동일합니다.</p>
+<h3 id="FASTCALL-호출-규약"><a href="#FASTCALL-호출-규약" class="headerlink" title="FASTCALL 호출 규약"></a>FASTCALL 호출 규약</h3><p>FASTCALL 호출 규약은 모든 컴파일러에서 표준 규약이 아니기 때문에 조심해서 사용해야 합니다. 함수를 정의할 때, 일반적으로 몇개의 파라미터는 레지스터를 통해서 전달되고, 나머지는 STDCALL 호출 규약처럼 오른쪽에서 왼쪽순으로 스택을 이용해서 전달됩니다. 따라서 파라미터에 수에 따라서 호출된 쪽(The called function)에서 스택을 정리할 때도 있습니다. 파라미터가 레지스터를 이용해서 전달되기 때문에 속도가 빠르다라는 특징 이외에는 STDCALL의 특징과 동일합니다.</p>
 <h2 id="참고-자료"><a href="#참고-자료" class="headerlink" title="참고 자료"></a>참고 자료</h2><p><a href="https://en.wikibooks.org/wiki/X86_Disassembly/Calling_Conventions" target="_blank" rel="noopener">x86 Disassembly/Calling Conventions - wiki</a></p>
 <p><a href="https://en.wikipedia.org/wiki/X86_calling_conventions" target="_blank" rel="noopener">x86 calling conventions - wiki</a></p>
 <p><a href="https://en.wikipedia.org/wiki/Calling_convention" target="_blank" rel="noopener">Calling convention - wiki </a></p>
